@@ -13,6 +13,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_example">Example action</string>
+    <string name="content_description">#</string>
+    <string name="sample_name_dream">Максі-сингл \"21 грам\" гурту \"Сонце в кишені\"</string>
+    <string name="sample_count_of_likes">75</string>
 
 </resources>
