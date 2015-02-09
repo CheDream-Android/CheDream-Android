@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/background_light">
+
+    <ImageView
+        android:id="@+id/image_view_main"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:contentDescription="@string/content_description"
+        android:scaleType="centerCrop"
+        android:src="@drawable/sample_image" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_view_count_of_likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:drawableTop="@drawable/like"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:text="@string/sample_count_of_likes" />
+
+            <TextView
+                android:id="@+id/text_view_name_dream"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/text_view_count_of_likes"
+                android:layout_toStartOf="@+id/text_view_count_of_likes"
+                android:padding="5dp"
+                android:text="@string/sample_name_dream" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="3">
+
+            <FrameLayout
+                android:id="@+id/progress_money_container"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/content_description"
+                    android:src="@drawable/coins" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_money"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:max="100"
+                    android:progressDrawable="@drawable/circle_progress"
+                    android:secondaryProgress="100" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/progress_tools_container"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/content_description"
+                    android:src="@drawable/tools" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_tools"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:max="100"
+                    android:progressDrawable="@drawable/circle_progress"
+                    android:secondaryProgress="100" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/progress_people_container"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/content_description"
+                    android:src="@drawable/people" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_people"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:max="100"
+                    android:progressDrawable="@drawable/circle_progress"
+                    android:secondaryProgress="100" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
