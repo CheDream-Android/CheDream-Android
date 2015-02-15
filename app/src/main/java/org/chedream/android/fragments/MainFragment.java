@@ -3,6 +3,8 @@ package org.chedream.android.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,28 +16,35 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
 import org.chedream.android.activities.MainActivity;
+import org.chedream.android.model.test.Dream;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class PlaceholderFragment extends Fragment {
+public class MainFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private List<Dream> mDreams;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
 
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-        PlaceholderFragment fragment = new PlaceholderFragment();
+    public static MainFragment newInstance(int sectionNumber) {
+        MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public PlaceholderFragment() {
+    public MainFragment() {
 
     }
 
@@ -53,18 +62,26 @@ public class PlaceholderFragment extends Fragment {
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
-        ArrayList<String> dreams = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            dreams.add(Integer.toString(i));
-        }
-        gridView.setAdapter(new GridViewAdapter(getActivity(), dreams));
+        mDreams = Dream.getDreams(getActivity());
+        gridView.setAdapter(new GridViewAdapter(getActivity()));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String text = "Selected " + (position + 1);
+//                String text = "getProgress() = " + ((ProgressBar) view.findViewById(R.id.progress_bar_money)).getProgress();
                 Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        options = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .build();
+
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
     }
 
     @Override
@@ -74,13 +91,11 @@ public class PlaceholderFragment extends Fragment {
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
-    private static class GridViewAdapter extends BaseAdapter {
+    private class GridViewAdapter extends BaseAdapter {
 
-        List<String> mDreams;
         private LayoutInflater mLayoutInflater;
 
-        public GridViewAdapter(Context context, List<String> dreams) {
-            mDreams = dreams;
+        public GridViewAdapter(Context context) {
             mLayoutInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -95,8 +110,8 @@ public class PlaceholderFragment extends Fragment {
             return mDreams.get(position);
         }
 
-        public String getDream(int position) {
-            return (String) getItem(position);
+        public Dream getDream(int position) {
+            return (Dream) getItem(position);
         }
 
         @Override
@@ -114,6 +129,8 @@ public class PlaceholderFragment extends Fragment {
                 viewHolder = new ViewHolder();
                 viewHolder.mImageViewMain = (ImageView) convertView.findViewById(R.id.image_view_main);
 
+                viewHolder.mTitle = (TextView) convertView.findViewById(R.id.textview_title);
+
                 viewHolder.mBarMoney = (ProgressBar) convertView.findViewById(R.id.progress_bar_money);
                 viewHolder.mBarTools = (ProgressBar) convertView.findViewById(R.id.progress_bar_tools);
                 viewHolder.mBarPeople = (ProgressBar) convertView.findViewById(R.id.progress_bar_people);
@@ -122,25 +139,47 @@ public class PlaceholderFragment extends Fragment {
                 viewHolder.mContainerTools = convertView.findViewById(R.id.progress_tools_container);
                 viewHolder.mContainerPeople = convertView.findViewById(R.id.progress_people_container);
 
+                viewHolder.mCountLikes = (TextView) convertView.findViewById(R.id.textview_count_of_likes);
+
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            int res = position % 2 == 0 ? R.drawable.sample_image : R.drawable.sample_image_2;
+            Dream dream = getDream(position);
 
-            viewHolder.mImageViewMain.setImageDrawable(convertView.getResources().getDrawable(res));
+            imageLoader.displayImage(
+                    dream.getImage(),
+                    viewHolder.mImageViewMain,
+                    options);
 
-            Random rand = new Random();
-            viewHolder.mBarMoney.setProgress(rand.nextInt(100));
-            viewHolder.mBarTools.setProgress(rand.nextInt(100));
-            viewHolder.mBarPeople.setProgress(rand.nextInt(100));
-            if (rand.nextInt(10) == 5) {
-                viewHolder.mContainerMoney.setVisibility(View.GONE);
-            }
-            if (rand.nextInt(100) == 5) {
-                viewHolder.mContainerTools.setVisibility(View.GONE);
-            }
+            viewHolder.mTitle.setText(dream.getTitle());
+
+            viewHolder.mCountLikes.setText(Integer.toString(dream.getLikes()));
+
+            viewHolder.mBarMoney.setProgress(dream.getMoneyCurrent());
+            viewHolder.mBarPeople.setProgress(dream.getPeopleCurrent());
+            viewHolder.mBarTools.setProgress(dream.getToolsCurrent());
+
+            int visibility = dream.isMoney() ? View.VISIBLE : View.GONE;
+            viewHolder.mContainerMoney.setVisibility(visibility);
+
+            visibility = dream.isPeople() ? View.VISIBLE : View.GONE;
+            viewHolder.mContainerPeople.setVisibility(visibility);
+
+            visibility = dream.isTools() ? View.VISIBLE : View.GONE;
+            viewHolder.mContainerTools.setVisibility(visibility);
+
+            PorterDuff.Mode mode = viewHolder.mBarMoney.
+                    getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+            viewHolder.mBarMoney.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            mode = viewHolder.mBarPeople.
+                    getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+            viewHolder.mBarPeople.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            mode = viewHolder.mBarTools.
+                    getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+            viewHolder.mBarTools.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+
             return convertView;
         }
     }
@@ -149,5 +188,6 @@ public class PlaceholderFragment extends Fragment {
         ImageView mImageViewMain;
         ProgressBar mBarMoney, mBarTools, mBarPeople;
         View mContainerMoney, mContainerTools, mContainerPeople;
+        TextView mTitle, mCountLikes;
     }
 }

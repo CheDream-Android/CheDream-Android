@@ -14,7 +14,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="content_description">#</string>
-    <string name="sample_name_dream">Максі-сингл \"21 грам\" гурту \"Сонце в кишені\"</string>
+    <string name="sample_dream_title">Максі-сингл \"21 грам\" гурту \"Сонце в кишені\"</string>
     <string name="sample_count_of_likes">75</string>
+    <string name="title_activity_details">DetailsActivity</string>
 
 </resources>

@@ -2,134 +2,127 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@android:color/background_light">
+    android:layout_height="250dp"
+    android:background="@android:color/background_light"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/image_view_main"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:contentDescription="@string/content_description"
-        android:scaleType="centerCrop"
-        android:src="@drawable/sample_image" />
+        android:scaleType="centerCrop" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textview_count_of_likes"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:drawableTop="@drawable/like"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:text="@string/sample_count_of_likes" />
 
-            <TextView
-                android:id="@+id/text_view_count_of_likes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:drawableTop="@drawable/like"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:text="@string/sample_count_of_likes" />
-
-            <TextView
-                android:id="@+id/text_view_name_dream"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/text_view_count_of_likes"
-                android:layout_toStartOf="@+id/text_view_count_of_likes"
-                android:padding="5dp"
-                android:text="@string/sample_name_dream" />
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:baselineAligned="false"
-            android:gravity="center"
-            android:orientation="horizontal"
+        <TextView
+            android:id="@+id/textview_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/textview_count_of_likes"
+            android:layout_toStartOf="@+id/textview_count_of_likes"
             android:padding="5dp"
-            android:weightSum="3">
+            android:text="@string/sample_dream_title" />
 
-            <FrameLayout
-                android:id="@+id/progress_money_container"
-                android:layout_width="0dp"
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:weightSum="3">
+
+        <FrameLayout
+            android:id="@+id/progress_money_container"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/content_description"
+                android:src="@drawable/coins" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_money"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/content_description"
-                    android:src="@drawable/coins" />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar_money"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:max="100"
-                    android:progressDrawable="@drawable/circle_progress"
-                    android:secondaryProgress="100" />
-            </FrameLayout>
+                android:max="100"
+                android:progressDrawable="@drawable/circle_progress"
+                android:secondaryProgress="100" />
+        </FrameLayout>
 
 
-            <FrameLayout
-                android:id="@+id/progress_tools_container"
-                android:layout_width="0dp"
+        <FrameLayout
+            android:id="@+id/progress_tools_container"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/content_description"
+                android:src="@drawable/tools" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_tools"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_weight="1">
+                android:max="100"
+                android:progressDrawable="@drawable/circle_progress"
+                android:secondaryProgress="100" />
+        </FrameLayout>
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/content_description"
-                    android:src="@drawable/tools" />
+        <FrameLayout
+            android:id="@+id/progress_people_container"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1">
 
-                <ProgressBar
-                    android:id="@+id/progress_bar_tools"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:max="100"
-                    android:progressDrawable="@drawable/circle_progress"
-                    android:secondaryProgress="100" />
-            </FrameLayout>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/content_description"
+                android:src="@drawable/people" />
 
-            <FrameLayout
-                android:id="@+id/progress_people_container"
-                android:layout_width="0dp"
+            <ProgressBar
+                android:id="@+id/progress_bar_people"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/content_description"
-                    android:src="@drawable/people" />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar_people"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:max="100"
-                    android:progressDrawable="@drawable/circle_progress"
-                    android:secondaryProgress="100" />
-            </FrameLayout>
-        </LinearLayout>
+                android:max="100"
+                android:progressDrawable="@drawable/circle_progress"
+                android:secondaryProgress="100" />
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

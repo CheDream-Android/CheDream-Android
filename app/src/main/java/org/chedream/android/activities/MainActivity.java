@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import org.chedream.android.R;
 import org.chedream.android.fragments.NavigationDrawerFragment;
-import org.chedream.android.fragments.PlaceholderFragment;
+import org.chedream.android.fragments.MainFragment;
 
 
 public class MainActivity extends ActionBarActivity
@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, MainFragment.newInstance(position + 1))
                 .commit();
     }
 
