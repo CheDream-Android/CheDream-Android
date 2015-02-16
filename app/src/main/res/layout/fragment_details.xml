@@ -1,15 +1,122 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.chedream.android.activities.DetailsActivity$PlaceholderFragment">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/dream_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"/>
+
+        <org.chedream.android.helpers.RoundedImageView
+            android:id="@+id/avatar_imageview"
+            android:layout_width="73dp"
+            android:layout_height="73dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="165dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/likes_number_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:drawableLeft="@drawable/like"
+            android:drawableStart="@drawable/like"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="6dp"
+            android:layout_below="@+id/dream_imageview"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/user_name_texview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="20sp"
+            android:layout_below="@+id/dream_imageview"
+            android:layout_marginTop="4dp"
+            android:layout_toRightOf="@+id/avatar_imageview"
+            android:layout_toEndOf="@+id/avatar_imageview"/>
+
+        <TextView
+            android:id="@+id/line_separator_textview"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/avatar_imageview"
+            android:background="#ff919191"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <LinearLayout
+            android:id="@+id/title_and_text_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical"
+            android:layout_below="@+id/line_separator_textview">
+
+            <TextView
+                android:id="@+id/dream_title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            <TextView
+                android:id="@+id/dream_description_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/title_and_text_holder">
+            <Button
+                android:id="@+id/estimate_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/estimate_button"
+                android:drawableRight="@drawable/ic_action_play"
+                android:drawableEnd="@drawable/ic_action_play"
+                android:paddingLeft="130dp"
+                android:background="#ffbbbbbb"
+                android:paddingRight="130dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="#ffffffff"/>
+            <Button
+                android:id="@+id/members_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/members_button"
+                android:drawableRight="@drawable/ic_action_play"
+                android:drawableEnd="@drawable/ic_action_play"
+                android:background="#ffbbbbbb"
+                android:paddingLeft="130dp"
+                android:paddingRight="130dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

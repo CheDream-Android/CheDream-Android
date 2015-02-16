@@ -6,11 +6,12 @@ import android.util.Log;
 
 import org.chedream.android.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Dream {
+public class Dream implements Serializable {
     private String title;
     private String description;
     private String image;
@@ -139,7 +140,7 @@ public class Dream {
     public static Dream getRandomDream(Context context, int i) {
         Resources res = context.getResources();
         Random rand = new Random();
-        String description = res.getString(R.string.sample_dream_title);
+        String description = titles[i];
         String title = titles[i];
         String image = images[i];
         Log.d("lalka", " i = " + i + "; + link = " + image);

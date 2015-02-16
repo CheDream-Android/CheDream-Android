@@ -17,5 +17,8 @@
     <string name="sample_dream_title">Максі-сингл \"21 грам\" гурту \"Сонце в кишені\"</string>
     <string name="sample_count_of_likes">75</string>
     <string name="title_activity_details">DetailsActivity</string>
+    <string name="sample_user_name">Соломія Вагнер</string>
+    <string name="estimate_button">Кошторис</string>
+    <string name="members_button">Учасники</string>
 
 </resources>

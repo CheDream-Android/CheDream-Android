@@ -2,6 +2,7 @@ package org.chedream.android.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -24,6 +25,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
+import org.chedream.android.activities.DetailsActivity;
 import org.chedream.android.activities.MainActivity;
 import org.chedream.android.model.test.Dream;
 
@@ -67,9 +69,9 @@ public class MainFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String text = "Selected " + (position + 1);
-//                String text = "getProgress() = " + ((ProgressBar) view.findViewById(R.id.progress_bar_money)).getProgress();
-                Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.get(position));
+                startActivity(intent);
             }
         });
 
