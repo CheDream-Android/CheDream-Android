@@ -14,26 +14,25 @@ import android.widget.ImageView;
 /**
  * Created by Dante Allteran on 2/16/2015.
  */
-public class RoundedImageView extends ImageView {
+public class RoundedImageViewHelper extends ImageView {
     private int borderWidth = 8;
     private int viewWidth;
     private int viewHeight;
     private Bitmap image;
     private Paint paint;
     private Paint paintBorder;
-    private BitmapShader shader;
 
-    public RoundedImageView(Context context, AttributeSet attrs) {
+    public RoundedImageViewHelper(Context context, AttributeSet attrs) {
         super(context, attrs);
         setup();
     }
 
-    public RoundedImageView(Context context, AttributeSet attrs, int defStyle) {
+    public RoundedImageViewHelper(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setup();
     }
 
-    public RoundedImageView(Context context) {
+    public RoundedImageViewHelper(Context context) {
         super(context);
     }
 
@@ -48,11 +47,6 @@ public class RoundedImageView extends ImageView {
         this.setLayerType(LAYER_TYPE_SOFTWARE, paintBorder);
         //you can add a shadow to the border, if you want
         //paintBorder.setShadowLayer(4.0f, 0.0f, 2.0f, Color.BLACK);
-    }
-
-    public void setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
-        this.invalidate();
     }
 
     public void setBorderColor(int borderColor) {
@@ -76,7 +70,7 @@ public class RoundedImageView extends ImageView {
 
         // init shader
         if (image != null) {
-            shader = new BitmapShader(Bitmap.createScaledBitmap(image, canvas.getWidth(),
+            BitmapShader shader = new BitmapShader(Bitmap.createScaledBitmap(image, canvas.getWidth(),
                     canvas.getHeight(), false), Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             paint.setShader(shader);
             int circleCenter = viewWidth / 2;

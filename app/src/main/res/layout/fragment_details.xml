@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.chedream.android.activities.DetailsActivity$PlaceholderFragment">
+    tools:context="org.chedream.android.activities.DetailsActivity$PlaceholderFragment"
+    android:fillViewport="false">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/dream_imageview"
@@ -15,7 +16,7 @@
             android:layout_height="200dp"
             android:scaleType="centerCrop"/>
 
-        <org.chedream.android.helpers.RoundedImageView
+        <org.chedream.android.helpers.RoundedImageViewHelper
             android:id="@+id/avatar_imageview"
             android:layout_width="73dp"
             android:layout_height="73dp"
@@ -88,35 +89,105 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/button_holder"
+            android:id="@+id/dream_info_btn_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_below="@+id/title_and_text_holder">
+
             <Button
-                android:id="@+id/estimate_button"
+                android:id="@+id/estimate_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/estimate_button"
                 android:drawableRight="@drawable/ic_action_play"
                 android:drawableEnd="@drawable/ic_action_play"
                 android:paddingLeft="130dp"
-                android:background="#ffbbbbbb"
+                android:background="@drawable/dream_info_btn_selector"
                 android:paddingRight="130dp"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:background="#ffffffff"/>
+
             <Button
-                android:id="@+id/members_button"
+                android:id="@+id/members_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/members_button"
                 android:drawableRight="@drawable/ic_action_play"
                 android:drawableEnd="@drawable/ic_action_play"
-                android:background="#ffbbbbbb"
+                android:background="@drawable/dream_info_btn_selector"
                 android:paddingLeft="130dp"
                 android:paddingRight="130dp"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/line_separator_textview1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/dream_info_btn_holder"
+            android:background="#ff919191"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="25dp"/>
+
+        <LinearLayout
+            android:id="@+id/dream_support_button_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line_separator_textview1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/financial_support_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/coins"
+                android:layout_weight="1"
+                android:text="@string/financial_support_btn"
+                android:background="@drawable/dream_support_btn_selector"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"/>
+
+            <Button
+                android:id="@+id/equip_support_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/tools"
+                android:layout_weight="1"
+                android:text="@string/equip_support_btn"
+                android:paddingTop="15dp"
+                android:background="@drawable/dream_support_btn_selector"
+                android:paddingBottom="15dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"/>
+
+            <Button
+                android:id="@+id/work_support_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/people"
+                android:layout_weight="1"
+                android:text="@string/work_support_btn"
+                android:paddingTop="15dp"
+                android:background="@drawable/dream_support_btn_selector"
+                android:paddingBottom="15dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/line_separator_textview0"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/dream_support_button_holder"
+            android:background="#ff919191"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
     </RelativeLayout>
 </ScrollView>

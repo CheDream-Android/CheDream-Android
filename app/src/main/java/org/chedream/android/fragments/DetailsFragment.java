@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,7 +18,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
-import org.chedream.android.helpers.RoundedImageView;
+import org.chedream.android.helpers.RoundedImageViewHelper;
 import org.chedream.android.model.test.Dream;
 
 public class DetailsFragment extends Fragment {
@@ -67,7 +69,7 @@ public class DetailsFragment extends Fragment {
                 options
         );
 
-        RoundedImageView avatar = (RoundedImageView) view.findViewById(R.id.avatar_imageview);
+        RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.avatar_imageview);
         imageLoader.displayImage(
                 dream.getImage(),
                 avatar,
@@ -78,12 +80,19 @@ public class DetailsFragment extends Fragment {
         likesNumber.setText(R.string.sample_count_of_likes); //get number of likes, when API will be available to give it
 
         TextView userName = (TextView) view.findViewById(R.id.user_name_texview);
-        userName.setText(R.string.sample_user_name);
+        userName.setText(R.string.sample_user_name); //only test try for now. It will get name from User-class
 
         TextView dreamTitle = (TextView) view.findViewById(R.id.dream_title_textview);
         dreamTitle.setText(dream.getTitle());
 
         TextView dreamDescription = (TextView) view.findViewById(R.id.dream_description_textview);
         dreamDescription.setText(dream.getDescription());
+
+        Button estimateButton = (Button) view.findViewById(R.id.estimate_btn);
+
+        Button membersButton = (Button) view.findViewById(R.id.members_btn);
+
+        Button financialSupportButton = (Button) view.findViewById(R.id.financial_support_btn);
     }
+
 }

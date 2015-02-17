@@ -20,5 +20,8 @@
     <string name="sample_user_name">Соломія Вагнер</string>
     <string name="estimate_button">Кошторис</string>
     <string name="members_button">Учасники</string>
+    <string name="financial_support_btn">Підтримати фінансово</string>
+    <string name="equip_support_btn">Надати обладнання</string>
+    <string name="work_support_btn">Провести роботи</string>
 
 </resources>
