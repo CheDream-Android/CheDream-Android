@@ -6,4 +6,9 @@
     <color name="btn_orange_pressed">#ff996226</color>
     <color name="btn_gray">#ffbbbbbb</color>
     <color name="btn_gray_pressed">#ff808080</color>
+
+    <color name="color_primary">#ffffffff</color>
+    <color name="color_primary_dark">#ffdcdcdc</color>
+
+    <color name="color_separator">#ff919191</color>
 </resources>

@@ -1,8 +1,13 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+    </style>
+
+    <style name="AppTheme.Overlay" parent="AppTheme">
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
 </resources>

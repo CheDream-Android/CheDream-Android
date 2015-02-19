@@ -1,17 +1,19 @@
 package org.chedream.android.fragments;
 
-import android.app.ActionBar;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -20,9 +22,11 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.chedream.android.R;
 import org.chedream.android.helpers.RoundedImageViewHelper;
 import org.chedream.android.model.test.Dream;
+import org.chedream.android.views.NotifyingScrollView;
 
 public class DetailsFragment extends Fragment {
     public static final String ARG_SECTION_NUMBER = "args";
+    private ActionBarActivity mActivity;
 
     public static DetailsFragment getInstance(Dream dream) {
         DetailsFragment fragment = new DetailsFragment();
@@ -42,15 +46,34 @@ public class DetailsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mActivity = (ActionBarActivity) getActivity();
+
+        final Drawable backgroundActionBar =
+                new ColorDrawable(getResources().getColor(R.color.color_primary));
+
+        mActivity.getSupportActionBar().setBackgroundDrawable(backgroundActionBar);
+        backgroundActionBar.setAlpha(0);
+
+        final int actionBarHeight = mActivity.getSupportActionBar().getHeight();
+        final int imageHeight = 500;
+        final int maxAlpha = 250;
+        ((NotifyingScrollView) view.findViewById(R.id.details_main_container)).setOnScrollChangedListener(
+                new NotifyingScrollView.OnScrollChangedListener() {
+                    @Override
+                    public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+                        int headerHeight = imageHeight - actionBarHeight;
+                        float ratio = (float)
+                                Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+                        int newAlpha = (int) (ratio * maxAlpha);
+                        backgroundActionBar.setAlpha(newAlpha);
+                    }
+                });
+
         Dream dream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
-        ActionBar actionBar = getActivity().getActionBar();
-        if (actionBar != null) {
-            Toast.makeText(getActivity(), "!= null", Toast.LENGTH_SHORT).show();
-            actionBar.setTitle(dream.getTitle());
-        }
+        ActionBar actionBar = mActivity.getSupportActionBar();
+        actionBar.setTitle(dream.getTitle());
 
-
-        ImageView mainImage = (ImageView) view.findViewById(R.id.dream_imageview);
+        ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
         ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
 
@@ -69,17 +92,17 @@ public class DetailsFragment extends Fragment {
                 options
         );
 
-        RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.avatar_imageview);
+        RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.img_avatar);
         imageLoader.displayImage(
                 dream.getImage(),
                 avatar,
                 options
         );
 
-        TextView likesNumber = (TextView) view.findViewById(R.id.likes_number_textview);
+        TextView likesNumber = (TextView) view.findViewById(R.id.txt_likes_number);
         likesNumber.setText(R.string.sample_count_of_likes); //get number of likes, when API will be available to give it
 
-        TextView userName = (TextView) view.findViewById(R.id.user_name_texview);
+        TextView userName = (TextView) view.findViewById(R.id.txt_user_name);
         userName.setText(R.string.sample_user_name); //only test try for now. It will get name from User-class
 
         TextView dreamTitle = (TextView) view.findViewById(R.id.dream_title_textview);
