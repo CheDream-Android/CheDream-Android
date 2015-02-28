@@ -11,4 +11,7 @@
     <color name="color_primary_dark">#ffdcdcdc</color>
 
     <color name="color_separator">#ff919191</color>
+
+    <color name="color_item_drawer_pressed">#ffd2d2d2</color>
+    <color name="color_item_drawer_activated">#ffffc04d</color>
 </resources>

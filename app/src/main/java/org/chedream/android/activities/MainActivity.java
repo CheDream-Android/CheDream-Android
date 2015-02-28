@@ -1,6 +1,7 @@
 package org.chedream.android.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -9,8 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.chedream.android.R;
+import org.chedream.android.fragments.ContactsFragment;
+import org.chedream.android.fragments.DreamsFragment;
+import org.chedream.android.fragments.FaqFragment;
 import org.chedream.android.fragments.NavigationDrawerFragment;
-import org.chedream.android.fragments.MainFragment;
 
 
 public class MainActivity extends ActionBarActivity
@@ -45,28 +48,41 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment;
+        switch (position) {
+            case 1:
+                fragment = DreamsFragment.newInstance(position);
+                break;
+            case 2:
+                fragment = FaqFragment.newInstance(position);
+                break;
+            case 3:
+                fragment = ContactsFragment.newInstance(position);
+                break;
+            default:
+                return;
+        }
         fragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.title_section_dreams);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_section_faq);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.title_section_contacts);
                 break;
         }
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }

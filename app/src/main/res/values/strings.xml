@@ -2,13 +2,14 @@
 <resources>
 
     <string name="app_name">CheDream</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Налаштування</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_details">Деталі</string>
+    <string name="title_activity_profile">Профіль</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section_dreams">Всі мрії</string>
+    <string name="title_section_faq">FAQ</string>
+    <string name="title_section_contacts">Контакти</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -16,7 +17,6 @@
     <string name="content_description">#</string>
     <string name="sample_dream_title">Максі-сингл \"21 грам\" гурту \"Сонце в кишені\"</string>
     <string name="sample_count_of_likes">75</string>
-    <string name="title_activity_details">DetailsActivity</string>
     <string name="sample_user_name">Соломія Вагнер</string>
     <string name="estimate_button">Кошторис</string>
     <string name="members_button">Учасники</string>

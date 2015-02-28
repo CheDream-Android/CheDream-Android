@@ -18,7 +18,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -27,33 +26,33 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.chedream.android.R;
 import org.chedream.android.activities.DetailsActivity;
 import org.chedream.android.activities.MainActivity;
+import org.chedream.android.helpers.Const;
 import org.chedream.android.model.test.Dream;
 
 import java.util.List;
 
-public class MainFragment extends Fragment {
+public class DreamsFragment extends Fragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
     private List<Dream> mDreams;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
 
-    public static MainFragment newInstance(int sectionNumber) {
-        MainFragment fragment = new MainFragment();
+    public static DreamsFragment newInstance(int sectionNumber) {
+        DreamsFragment fragment = new DreamsFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        args.putInt(Const.ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public MainFragment() {
+    public DreamsFragment() {
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        return inflater.inflate(R.layout.fragment_dreams, container, false);
     }
 
     @Override
@@ -90,7 +89,7 @@ public class MainFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(
-                getArguments().getInt(ARG_SECTION_NUMBER));
+                getArguments().getInt(Const.ARG_SECTION_NUMBER));
     }
 
     private class GridViewAdapter extends BaseAdapter {
