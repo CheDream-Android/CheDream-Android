@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 import org.chedream.android.R;
+import org.chedream.android.fragments.LoginFragment;
 import org.chedream.android.fragments.ProfileFragment;
 
 public class ProfileActivity extends ActionBarActivity {
@@ -15,7 +16,7 @@ public class ProfileActivity extends ActionBarActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_container_profile, new ProfileFragment())
+                    .replace(R.id.main_container_profile, new LoginFragment())
                     .commit();
         }
     }

@@ -1,10 +1,13 @@
 package org.chedream.android.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class User {
+public class User implements Parcelable {
 
     private String id;
 
@@ -175,4 +178,61 @@ public class User {
     public void setSkype(String skype) {
         this.skype = skype;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.firstName);
+        dest.writeString(this.middleName);
+        dest.writeString(this.lastName);
+        dest.writeString(this.birthday);
+        dest.writeString(this.about);
+        dest.writeString(this.vkontakteId);
+        dest.writeString(this.facebookId);
+        dest.writeString(this.odnoklassnikiId);
+        dest.writeSerializable(this.financialContributions);
+        dest.writeSerializable(this.equipmentContributions);
+        dest.writeSerializable(this.workContributions);
+        dest.writeSerializable(this.otherContributions);
+        dest.writeSerializable(this.dreams);
+        dest.writeString(this.phone);
+        dest.writeString(this.skype);
+    }
+
+    public User() {
+    }
+
+    private User(Parcel in) {
+        this.id = in.readString();
+        this.firstName = in.readString();
+        this.middleName = in.readString();
+        this.lastName = in.readString();
+        this.birthday = in.readString();
+        this.about = in.readString();
+        this.vkontakteId = in.readString();
+        this.facebookId = in.readString();
+        this.odnoklassnikiId = in.readString();
+        this.financialContributions = (ArrayList<FinancialContribution>) in.readSerializable();
+        this.equipmentContributions = (ArrayList<FinancialContribution>) in.readSerializable();
+        this.workContributions = (ArrayList<FinancialContribution>) in.readSerializable();
+        this.otherContributions = (ArrayList<FinancialContribution>) in.readSerializable();
+        this.dreams = (ArrayList<Dream>) in.readSerializable();
+        this.phone = in.readString();
+        this.skype = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

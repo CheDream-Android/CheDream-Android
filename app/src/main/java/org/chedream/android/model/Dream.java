@@ -1,10 +1,14 @@
 package org.chedream.android.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Dream {
+public class Dream implements Parcelable {
 
     private String id;
 
@@ -44,7 +48,7 @@ public class Dream {
     private int equipmentCompleted;
 
     @SerializedName("users_who_favorites")
-    private ArrayList<User> usersWhoFavorites;
+    private List<User> usersWhoFavorites;
 
     private User author;
 
@@ -175,7 +179,7 @@ public class Dream {
         this.equipmentCompleted = equipmentCompleted;
     }
 
-    public ArrayList<User> getUsersWhoFavorites() {
+    public List<User> getUsersWhoFavorites() {
         return usersWhoFavorites;
     }
 
@@ -230,4 +234,72 @@ public class Dream {
     public void setDreamFinancialContributions(ArrayList<FinancialContribution> dreamFinancialContributions) {
         this.dreamFinancialContributions = dreamFinancialContributions;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.rejectedDescription);
+        dest.writeString(this.implementedDescription);
+        dest.writeString(this.completedDescription);
+        dest.writeString(this.phone);
+        dest.writeString(this.slug);
+        dest.writeString(this.createdAt);
+        dest.writeString(this.updatedAt);
+        dest.writeString(this.expiredDate);
+        dest.writeInt(this.financialCompleted);
+        dest.writeInt(this.workCompleted);
+        dest.writeInt(this.equipmentCompleted);
+        dest.writeSerializable((java.io.Serializable) this.usersWhoFavorites);
+        dest.writeParcelable(this.author, flags);
+        dest.writeString(this.currentStatus);
+        dest.writeSerializable(this.dreamFinancialResources);
+        dest.writeSerializable(this.dreamEquipmentResources);
+        dest.writeSerializable(this.dreamWorkResources);
+        dest.writeSerializable(this.dreamFinancialContributions);
+    }
+
+    public Dream() {
+    }
+
+    private Dream(Parcel in) {
+        this.id = in.readString();
+        this.title = in.readString();
+        this.description = in.readString();
+        this.rejectedDescription = in.readString();
+        this.implementedDescription = in.readString();
+        this.completedDescription = in.readString();
+        this.phone = in.readString();
+        this.slug = in.readString();
+        this.createdAt = in.readString();
+        this.updatedAt = in.readString();
+        this.expiredDate = in.readString();
+        this.financialCompleted = in.readInt();
+        this.workCompleted = in.readInt();
+        this.equipmentCompleted = in.readInt();
+        this.usersWhoFavorites = (List<User>) in.readSerializable();
+        this.author = in.readParcelable(User.class.getClassLoader());
+        this.currentStatus = in.readString();
+        this.dreamFinancialResources = (ArrayList<FinancialResource>) in.readSerializable();
+        this.dreamEquipmentResources = (ArrayList<EquipmentResource>) in.readSerializable();
+        this.dreamWorkResources = (ArrayList<WorkResource>) in.readSerializable();
+        this.dreamFinancialContributions = (ArrayList<FinancialContribution>) in.readSerializable();
+    }
+
+    public static final Creator<Dream> CREATOR = new Creator<Dream>() {
+        public Dream createFromParcel(Parcel source) {
+            return new Dream(source);
+        }
+
+        public Dream[] newArray(int size) {
+            return new Dream[size];
+        }
+    };
 }
