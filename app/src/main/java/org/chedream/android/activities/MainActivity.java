@@ -1,5 +1,6 @@
 package org.chedream.android.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import org.chedream.android.fragments.DreamsFragment;
 import org.chedream.android.fragments.FaqFragment;
 import org.chedream.android.fragments.NavigationDrawerFragment;
 
+import static org.chedream.android.helpers.Const.Navigation.*;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -50,13 +52,20 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
         switch (position) {
-            case 1:
+            case PROFILE:
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+                return;
+            case ALL_DREAMS:
                 fragment = DreamsFragment.newInstance(position);
                 break;
-            case 2:
+            case FAVOURITE_DREAMS:
+                fragment = DreamsFragment.newInstance(position);
+                break;
+            case FAQ:
                 fragment = FaqFragment.newInstance(position);
                 break;
-            case 3:
+            case CONTACTS:
                 fragment = ContactsFragment.newInstance(position);
                 break;
             default:
@@ -69,13 +78,16 @@ public class MainActivity extends ActionBarActivity
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
+            case ALL_DREAMS:
                 mTitle = getString(R.string.title_section_dreams);
                 break;
-            case 2:
+            case FAVOURITE_DREAMS:
+                mTitle = getString(R.string.title_section_favo_dreams);
+                break;
+            case FAQ:
                 mTitle = getString(R.string.title_section_faq);
                 break;
-            case 3:
+            case CONTACTS:
                 mTitle = getString(R.string.title_section_contacts);
                 break;
         }

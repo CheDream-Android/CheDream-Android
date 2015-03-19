@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -171,15 +170,17 @@ public class DreamsFragment extends Fragment {
             visibility = dream.isTools() ? View.VISIBLE : View.GONE;
             viewHolder.mContainerTools.setVisibility(visibility);
 
+            final int ORANGE = 0xFF9933;
+
             PorterDuff.Mode mode = viewHolder.mBarMoney.
                     getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-            viewHolder.mBarMoney.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
             mode = viewHolder.mBarPeople.
                     getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-            viewHolder.mBarPeople.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
             mode = viewHolder.mBarTools.
                     getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-            viewHolder.mBarTools.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
 
             return convertView;
         }
