@@ -1,9 +1,81 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_primary"
-    android:choiceMode="singleChoice"
-    android:divider="@android:color/transparent"
-    android:dividerHeight="0dp"
-    tools:context="org.chedream.android.fragments.NavigationDrawerFragment" />
+    tools:context="org.chedream.android.fragments.NavigationDrawerFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/profile_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_login"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center"
+                android:text="@string/login"
+                android:textSize="24sp" />
+
+            <org.chedream.android.helpers.RoundedImageViewHelper
+                android:id="@+id/img_avatar"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="28dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/txt_user_name"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="28dp"
+                android:textSize="20sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_all_dreams"
+            style="@style/drawer_item_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/drawer_all_icon"
+            android:drawableStart="@drawable/drawer_all_icon"
+            android:text="@string/title_section_dreams" />
+
+        <TextView
+            android:id="@+id/txt_favo_dreams"
+            style="@style/drawer_item_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/drawer_favo_icon"
+            android:drawableStart="@drawable/drawer_favo_icon"
+            android:text="@string/title_section_favo_dreams" />
+
+        <TextView
+            android:id="@+id/txt_faq"
+            style="@style/drawer_item_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/drawer_faq_icon"
+            android:drawableStart="@drawable/drawer_faq_icon"
+            android:text="@string/title_section_faq" />
+
+        <TextView
+            android:id="@+id/txt_contacts"
+            style="@style/drawer_item_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/drawer_contacts_icon"
+            android:drawableStart="@drawable/drawer_contacts_icon"
+            android:text="@string/title_section_contacts" />
+    </LinearLayout>
+</ScrollView>

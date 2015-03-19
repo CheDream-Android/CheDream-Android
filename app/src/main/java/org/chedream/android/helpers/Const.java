@@ -8,4 +8,12 @@ public class Const {
     public static final String SP_USER_NAME = "user_name";
 
     public static final String API_BASE_URL = "http://api.chedream.org/";
+
+    public static class Navigation {
+        public static final int PROFILE = 0;
+        public static final int ALL_DREAMS = 1;
+        public static final int FAVOURITE_DREAMS = 2;
+        public static final int FAQ = 3;
+        public static final int CONTACTS = 4;
+    }
 }
