@@ -8,11 +8,14 @@
     <string name="title_activity_profile">Профіль</string>
 
     <string name="title_section_dreams">Всі мрії</string>
+    <string name="title_section_favo_dreams">Обрані мрії</string>
     <string name="title_section_faq">FAQ</string>
     <string name="title_section_contacts">Контакти</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="facebook_app_id">407407372773761</string>
 
     <string name="content_description">#</string>
     <string name="sample_dream_title">Максі-сингл \"21 грам\" гурту \"Сонце в кишені\"</string>
@@ -23,5 +26,12 @@
     <string name="financial_support_btn">Підтримати фінансово</string>
     <string name="equip_support_btn">Надати обладнання</string>
     <string name="work_support_btn">Провести роботи</string>
+    <string name="action_add_to_favorite">Add dream to favorites</string>
+    <string name="title_selection_favorites">Favorite Dreams</string>
+    <string name="action_delete_all_favorites">Delete All Favotire Articles</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login">Вхід</string>
 
 </resources>

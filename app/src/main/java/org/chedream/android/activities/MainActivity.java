@@ -1,5 +1,6 @@
 package org.chedream.android.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import org.chedream.android.fragments.DreamsFragment;
 import org.chedream.android.fragments.FaqFragment;
 import org.chedream.android.fragments.NavigationDrawerFragment;
 
+import static org.chedream.android.helpers.Const.Navigation.*;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -50,14 +52,24 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
         switch (position) {
-            case 1:
+            case PROFILE:
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivity(intent);
+                return;
+            case ALL_DREAMS:
                 fragment = DreamsFragment.newInstance(position);
                 break;
-            case 2:
+            case FAVOURITE_DREAMS:
+                fragment = DreamsFragment.newInstance(position);
+                break;
+            case FAQ:
                 fragment = FaqFragment.newInstance(position);
                 break;
-            case 3:
+            case CONTACTS:
                 fragment = ContactsFragment.newInstance(position);
+                break;
+            case 4:
+                fragment = DreamsFragment.newInstance(position);
                 break;
             default:
                 return;
@@ -69,14 +81,20 @@ public class MainActivity extends ActionBarActivity
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
+            case ALL_DREAMS:
                 mTitle = getString(R.string.title_section_dreams);
                 break;
-            case 2:
+            case FAVOURITE_DREAMS:
+                mTitle = getString(R.string.title_section_favo_dreams);
+                break;
+            case FAQ:
                 mTitle = getString(R.string.title_section_faq);
                 break;
-            case 3:
+            case CONTACTS:
                 mTitle = getString(R.string.title_section_contacts);
+                break;
+            case 4:
+                mTitle = getString(R.string.title_selection_favorites);
                 break;
         }
     }
@@ -85,34 +103,5 @@ public class MainActivity extends ActionBarActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
