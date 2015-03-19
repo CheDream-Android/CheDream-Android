@@ -28,7 +28,6 @@
             android:id="@+id/txt_all_dreams"
             style="@style/drawer_item_style"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:drawableLeft="@drawable/drawer_all_icon"
             android:drawableStart="@drawable/drawer_all_icon"
             android:text="@string/title_section_dreams" />
@@ -37,7 +36,6 @@
             android:id="@+id/txt_favo_dreams"
             style="@style/drawer_item_style"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:drawableLeft="@drawable/drawer_favo_icon"
             android:drawableStart="@drawable/drawer_favo_icon"
             android:text="@string/title_section_favo_dreams" />
@@ -46,7 +44,6 @@
             android:id="@+id/txt_faq"
             style="@style/drawer_item_style"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:drawableLeft="@drawable/drawer_faq_icon"
             android:drawableStart="@drawable/drawer_faq_icon"
             android:text="@string/title_section_faq" />
@@ -55,7 +52,6 @@
             android:id="@+id/txt_contacts"
             style="@style/drawer_item_style"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:drawableLeft="@drawable/drawer_contacts_icon"
             android:drawableStart="@drawable/drawer_contacts_icon"
             android:text="@string/title_section_contacts" />
