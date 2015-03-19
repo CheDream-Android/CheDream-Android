@@ -99,25 +99,9 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(PROFILE);
             }
         });
-<<<<<<< HEAD
-        ArrayAdapter<String> adapter = new NavigationDrawerAdapter(
-                getActionBar().getThemedContext(),
-                R.layout.item_navigation_drawer,
-                R.id.txt_nav_item,
-                new String[]{
-                        getString(R.string.title_section_dreams),
-                        getString(R.string.title_section_faq),
-                        getString(R.string.title_section_contacts),
-                        getString(R.string.title_selection_favorites)
-                });
-
-        View header = getLayoutInflater(null).inflate(R.layout.header_navigation_drawer, container);
-        header.setOnClickListener(new View.OnClickListener() {
-=======
 
         TextView allDreams = (TextView) view.findViewById(R.id.txt_all_dreams);
         allDreams.setOnClickListener(new View.OnClickListener() {
->>>>>>> origin/master
             @Override
             public void onClick(View v) {
                 selectItem(ALL_DREAMS);
