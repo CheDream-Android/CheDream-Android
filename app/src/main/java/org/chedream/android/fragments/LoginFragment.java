@@ -107,8 +107,6 @@ public class LoginFragment extends Fragment {
         SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
         sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged).apply();
-        ;
-
     }
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
