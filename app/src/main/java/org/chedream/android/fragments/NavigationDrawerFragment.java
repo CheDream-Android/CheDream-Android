@@ -21,10 +21,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
 import org.chedream.android.activities.ProfileActivity;
 import org.chedream.android.adapters.NavigationDrawerAdapter;
+import org.chedream.android.helpers.Const;
+import org.chedream.android.helpers.RoundedImageViewHelper;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -58,6 +65,8 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
+    private SharedPreferences mSharedPrefs;
+
     private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -71,8 +80,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mUserLearnedDrawer = mSharedPrefs.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
@@ -125,6 +134,43 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.addHeaderView(header);
         mDrawerListView.setAdapter(adapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+        TextView loginTextView = (TextView) header.findViewById(R.id.login_textview);
+        TextView userNameTextView = (TextView) header.findViewById(R.id.txt_user_name);
+        RoundedImageViewHelper profilePicture =
+                (RoundedImageViewHelper) header.findViewById(R.id.img_avatar);
+
+
+
+
+        if(mSharedPrefs.getBoolean(Const.SP_LOGIN_STATUS,false)) {
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.people)
+                    .showImageOnFail(R.drawable.people)
+                    .showImageForEmptyUri(R.drawable.people)
+                    .cacheOnDisk(true)
+                    .cacheInMemory(true)
+                    .considerExifParams(true)
+                    .build();
+
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
+            imageLoader.displayImage(
+                    mSharedPrefs.getString(Const.SP_USER_PICTURE_URL, null),
+                    profilePicture,
+                    options
+            );
+
+            loginTextView.setVisibility(View.GONE);
+            profilePicture.setVisibility(View.VISIBLE);
+            userNameTextView.setText(mSharedPrefs.getString(Const.SP_USER_NAME, null));
+            userNameTextView.setVisibility(View.VISIBLE);
+        } else {
+            loginTextView.setVisibility(View.VISIBLE);
+            profilePicture.setVisibility(View.GONE);
+            userNameTextView.setVisibility(View.GONE);
+        }
+
         return mDrawerListView;
     }
 
