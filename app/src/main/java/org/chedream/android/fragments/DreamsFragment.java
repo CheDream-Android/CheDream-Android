@@ -8,7 +8,11 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,16 +29,25 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.chedream.android.R;
 import org.chedream.android.activities.DetailsActivity;
 import org.chedream.android.activities.MainActivity;
+import org.chedream.android.database.RealmHelper;
 import org.chedream.android.helpers.Const;
 import org.chedream.android.model.test.Dream;
+import org.chedream.android.model.test.DreamRandomizer;
 
 import java.util.List;
+
+import io.realm.Realm;
 
 public class DreamsFragment extends Fragment {
 
     private List<Dream> mDreams;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
+    private ActionBarActivity mActivity;
+    private Realm mRealm;
+    private RealmHelper mRealmHelper;
+    private GridViewAdapter mGridViewAdapter;
+
 
     public static DreamsFragment newInstance(int sectionNumber) {
         DreamsFragment fragment = new DreamsFragment();
@@ -46,6 +59,47 @@ public class DreamsFragment extends Fragment {
 
     public DreamsFragment() {
 
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        //if it wont work - move to onViewCreated  part of code below cause it always were there
+        mActivity = (ActionBarActivity) getActivity();
+        mRealm = Realm.getInstance(mActivity);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mRealm.close();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
+            menu.findItem(R.id.action_delete_all_favorites).setVisible(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete_all_favorites:
+                mRealm.close();
+                Realm.deleteRealmFile(mActivity);
+                mDreams.clear();
+                mGridViewAdapter.notifyDataSetChanged();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -62,8 +116,14 @@ public class DreamsFragment extends Fragment {
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
-        mDreams = Dream.getDreams(getActivity());
-        gridView.setAdapter(new GridViewAdapter(getActivity()));
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
+            mRealmHelper = new RealmHelper();
+            mDreams = mRealmHelper.getAllTestDreams(mRealm);
+        } else {
+            mDreams = DreamRandomizer.getDreams(getActivity());
+        }
+        mGridViewAdapter = new GridViewAdapter(getActivity());
+        gridView.setAdapter(mGridViewAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -161,13 +221,13 @@ public class DreamsFragment extends Fragment {
             viewHolder.mBarPeople.setProgress(dream.getPeopleCurrent());
             viewHolder.mBarTools.setProgress(dream.getToolsCurrent());
 
-            int visibility = dream.isMoney() ? View.VISIBLE : View.GONE;
+            int visibility = dream.getMoneyMax() != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerMoney.setVisibility(visibility);
 
-            visibility = dream.isPeople() ? View.VISIBLE : View.GONE;
+            visibility = dream.getPeopleMax() != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerPeople.setVisibility(visibility);
 
-            visibility = dream.isTools() ? View.VISIBLE : View.GONE;
+            visibility = dream.getToolsMax() != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerTools.setVisibility(visibility);
 
             final int ORANGE = 0xFF9933;

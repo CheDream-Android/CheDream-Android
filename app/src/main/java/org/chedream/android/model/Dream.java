@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
+import io.realm.RealmObject;
 
 public class Dream implements Parcelable {
-
     private String id;
 
     private String title;

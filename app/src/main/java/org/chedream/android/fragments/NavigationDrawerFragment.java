@@ -19,9 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import org.chedream.android.R;
 
 import static org.chedream.android.helpers.Const.Navigation.*;
+
+import org.chedream.android.helpers.Const;
+import org.chedream.android.helpers.RoundedImageViewHelper;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -55,6 +62,8 @@ public class NavigationDrawerFragment extends Fragment {
     //    private ListView mDrawerListView;
     private View mFragmentContainerView;
 
+    private SharedPreferences mSharedPrefs;
+
     private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -68,8 +77,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mUserLearnedDrawer = mSharedPrefs.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
@@ -131,6 +140,40 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(CONTACTS);
             }
         });
+
+        TextView loginTextView = (TextView) profile.findViewById(R.id.txt_login);
+        TextView userNameTextView = (TextView) profile.findViewById(R.id.txt_user_name);
+        RoundedImageViewHelper profilePicture =
+                (RoundedImageViewHelper) profile.findViewById(R.id.img_avatar);
+
+        if (mSharedPrefs.getBoolean(Const.SP_LOGIN_STATUS, false)) {
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.people)
+                    .showImageOnFail(R.drawable.people)
+                    .showImageForEmptyUri(R.drawable.people)
+                    .cacheOnDisk(true)
+                    .cacheInMemory(true)
+                    .considerExifParams(true)
+                    .build();
+
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
+            imageLoader.displayImage(
+                    mSharedPrefs.getString(Const.SP_USER_PICTURE_URL, null),
+                    profilePicture,
+                    options
+            );
+
+            loginTextView.setVisibility(View.GONE);
+            profilePicture.setVisibility(View.VISIBLE);
+            userNameTextView.setText(mSharedPrefs.getString(Const.SP_USER_NAME, null));
+            userNameTextView.setVisibility(View.VISIBLE);
+        } else {
+            loginTextView.setVisibility(View.VISIBLE);
+            profilePicture.setVisibility(View.GONE);
+            userNameTextView.setVisibility(View.GONE);
+        }
+
         return view;
     }
 

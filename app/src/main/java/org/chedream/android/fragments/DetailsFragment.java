@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,13 +23,18 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
+import org.chedream.android.database.RealmHelper;
 import org.chedream.android.helpers.RoundedImageViewHelper;
 import org.chedream.android.model.test.Dream;
 import org.chedream.android.views.NotifyingScrollView;
 
+import io.realm.Realm;
+
 public class DetailsFragment extends Fragment {
     public static final String ARG_SECTION_NUMBER = "args";
     private ActionBarActivity mActivity;
+    private Realm mRealm;
+    private Dream mDream;
 
     public static DetailsFragment getInstance(Dream dream) {
         DetailsFragment fragment = new DetailsFragment();
@@ -37,16 +45,46 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        //if it wont work - move to onViewCreated  part of code below cause it always were there
+        mActivity = (ActionBarActivity) getActivity();
+        mRealm = Realm.getInstance(mActivity);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_details, container, false);
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_details, menu);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mRealm.close();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_to_favorite:
+                RealmHelper realmHelper = new RealmHelper();
+                //Dream dream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
+                realmHelper.addTestDreamToDatabase(mRealm,mDream);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        mActivity = (ActionBarActivity) getActivity();
 
         final Drawable backgroundActionBar =
                 new ColorDrawable(getResources().getColor(R.color.color_primary));
@@ -69,9 +107,9 @@ public class DetailsFragment extends Fragment {
                     }
                 });
 
-        Dream dream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
+        mDream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
         ActionBar actionBar = mActivity.getSupportActionBar();
-        actionBar.setTitle(dream.getTitle());
+        actionBar.setTitle(mDream.getTitle());
 
         ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -87,14 +125,14 @@ public class DetailsFragment extends Fragment {
                 .build();
 
         imageLoader.displayImage(
-                dream.getImage(),
+                mDream.getImage(),
                 mainImage,
                 options
         );
 
         RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.img_avatar);
         imageLoader.displayImage(
-                dream.getImage(),
+                mDream.getImage(),
                 avatar,
                 options
         );
@@ -106,10 +144,10 @@ public class DetailsFragment extends Fragment {
         userName.setText(R.string.sample_user_name); //only test try for now. It will get name from User-class
 
         TextView dreamTitle = (TextView) view.findViewById(R.id.dream_title_textview);
-        dreamTitle.setText(dream.getTitle());
+        dreamTitle.setText(mDream.getTitle());
 
         TextView dreamDescription = (TextView) view.findViewById(R.id.dream_description_textview);
-        dreamDescription.setText(dream.getDescription());
+        dreamDescription.setText(mDream.getDescription());
 
         Button estimateButton = (Button) view.findViewById(R.id.estimate_btn);
 
@@ -117,5 +155,6 @@ public class DetailsFragment extends Fragment {
 
         Button financialSupportButton = (Button) view.findViewById(R.id.financial_support_btn);
     }
+
 
 }
