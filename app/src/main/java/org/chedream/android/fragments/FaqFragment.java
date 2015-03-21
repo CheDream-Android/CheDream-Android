@@ -1,6 +1,11 @@
 package org.chedream.android.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,27 +17,20 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.chedream.android.R;
 import org.chedream.android.activities.MainActivity;
 import org.chedream.android.helpers.Const;
+import org.chedream.android.helpers.DownloadAndParseJSONHelper;
 import org.chedream.android.model.FAQ;
 import org.chedream.android.model.FAQsContainer;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
-    NOT FINISHED YET
+ * NOT FINISHED YET
  */
 
 public class FaqFragment extends Fragment {
@@ -71,7 +69,7 @@ public class FaqFragment extends Fragment {
 
     private class DownloadFAQSTask extends AsyncTask<Void, Void, String> {
 
-        private final String LOG_TAG = DownloadFAQSTask.class.getSimpleName();
+        private final String API_FAQS = "faqs.json";
 
         @Override
         protected void onPreExecute() {
@@ -81,53 +79,36 @@ public class FaqFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... params) {
-            String url = Const.API_BASE_URL + "faqs.json";
-            InputStream source = retrieveStream(url);
-            Reader reader = new InputStreamReader(source);
-            Gson gson = new Gson();
-            FAQsContainer container = gson.fromJson(reader, FAQsContainer.class);
+            String url = Const.API_BASE_URL + API_FAQS;
 
-            return buildFAQsString(container.getFaqs());
+            FAQsContainer container =
+                    new DownloadAndParseJSONHelper<>(getActivity(), FAQsContainer.class)
+                            .DownloadAndParse(url);
+
+            return (container != null) ? buildFAQsString(container.getFaqs()) : null;
         }
 
         @Override
         protected void onPostExecute(String faqsStr) {
             super.onPostExecute(faqsStr);
             mProgressBar.setVisibility(View.GONE);
+
+            if (faqsStr == null) {
+                return;
+            }
             mTextView.setText(Html.fromHtml(faqsStr));
-        }
-
-        private InputStream retrieveStream(String url) {
-            DefaultHttpClient client = new DefaultHttpClient();
-            HttpGet getRequest = new HttpGet(url);
-
-            try {
-                HttpResponse getResponse = client.execute(getRequest);
-                final int statusCode = getResponse.getStatusLine().getStatusCode();
-                if (statusCode != HttpStatus.SC_OK) {
-                    Log.e(LOG_TAG, "Error " + statusCode + " for URL " + url);
-                    return null;
-                }
-                HttpEntity getResponseEntity = getResponse.getEntity();
-                return getResponseEntity.getContent();
-            }
-            catch (IOException e) {
-                getRequest.abort();
-                Log.e(LOG_TAG, "Error for URL " + url, e);
-            }
-            return null;
         }
 
         private String buildFAQsString(List<FAQ> faqs) {
             StringBuilder faqsStrBuilder = new StringBuilder("");
 
-            for(FAQ faq: faqs) {
+            for (FAQ faq : faqs) {
                 faqsStrBuilder.append(String.format(
                         "<b>Запитання</b>:<br>%s<br>",
                         faq.getQuestion()));
                 faqsStrBuilder.append(String.format(
                         "<br><b>Відповідь</b>:<br>%s<br><br><br>",
-                        faq.getQuestion()));
+                        faq.getAnswer()));
             }
 
             return faqsStrBuilder.toString();
