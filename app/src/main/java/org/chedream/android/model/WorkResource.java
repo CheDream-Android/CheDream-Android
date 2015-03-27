@@ -7,11 +7,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class WorkResource implements Parcelable {
+public class WorkResource {
 
     private int quantity;
 
-    private Dream dream;
+    private ArrayList<Dream> dream; //???
 
     private String title;
 
@@ -28,11 +28,11 @@ public class WorkResource implements Parcelable {
         this.quantity = quantity;
     }
 
-    public Dream getDream() {
+    public ArrayList<Dream> getDream() {
         return dream;
     }
 
-    public void setDream(Dream dream) {
+    public void setDream(ArrayList<Dream> dream) {
         this.dream = dream;
     }
 
@@ -60,39 +60,4 @@ public class WorkResource implements Parcelable {
         this.workContributions = workContributions;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.quantity);
-        dest.writeParcelable(this.dream, 0);
-        dest.writeString(this.title);
-        dest.writeString(this.id);
-        dest.writeSerializable(this.workContributions);
-    }
-
-    public WorkResource() {
-    }
-
-    private WorkResource(Parcel in) {
-        this.quantity = in.readInt();
-        this.dream = in.readParcelable(Dream.class.getClassLoader());
-        this.title = in.readString();
-        this.id = in.readString();
-        this.workContributions = (ArrayList<WorkContribution>) in.readSerializable();
-    }
-
-    public static final Creator<WorkResource> CREATOR = new Creator<WorkResource>() {
-        public WorkResource createFromParcel(Parcel source) {
-            return new WorkResource(source);
-        }
-
-        public WorkResource[] newArray(int size) {
-            return new WorkResource[size];
-        }
-    };
 }

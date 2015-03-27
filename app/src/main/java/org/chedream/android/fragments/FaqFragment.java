@@ -20,7 +20,6 @@ import android.widget.TextView;
 import org.chedream.android.R;
 import org.chedream.android.activities.MainActivity;
 import org.chedream.android.helpers.Const;
-import org.chedream.android.helpers.DownloadAndParseJSONHelper;
 import org.chedream.android.model.FAQ;
 import org.chedream.android.model.FAQsContainer;
 
@@ -54,7 +53,7 @@ public class FaqFragment extends Fragment {
         mTextView = (TextView) view.findViewById(R.id.faqs_textview);
         mProgressBar = (ProgressBar) view.findViewById(R.id.faqs_progress_bar);
 
-        new DownloadFAQSTask().execute();
+        //new DownloadFAQSTask().execute();
 
         return view;
     }
@@ -67,51 +66,51 @@ public class FaqFragment extends Fragment {
                 getArguments().getInt(Const.ARG_SECTION_NUMBER));
     }
 
-    private class DownloadFAQSTask extends AsyncTask<Void, Void, String> {
-
-        private final String API_FAQS = "faqs.json";
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            String url = Const.API_BASE_URL + API_FAQS;
-
-            FAQsContainer container =
-                    new DownloadAndParseJSONHelper<>(getActivity(), FAQsContainer.class)
-                            .DownloadAndParse(url);
-
-            return (container != null) ? buildFAQsString(container.getFaqs()) : null;
-        }
-
-        @Override
-        protected void onPostExecute(String faqsStr) {
-            super.onPostExecute(faqsStr);
-            mProgressBar.setVisibility(View.GONE);
-
-            if (faqsStr == null) {
-                return;
-            }
-            mTextView.setText(Html.fromHtml(faqsStr));
-        }
-
-        private String buildFAQsString(List<FAQ> faqs) {
-            StringBuilder faqsStrBuilder = new StringBuilder("");
-
-            for (FAQ faq : faqs) {
-                faqsStrBuilder.append(String.format(
-                        "<b>Запитання</b>:<br>%s<br>",
-                        faq.getQuestion()));
-                faqsStrBuilder.append(String.format(
-                        "<br><b>Відповідь</b>:<br>%s<br><br><br>",
-                        faq.getAnswer()));
-            }
-
-            return faqsStrBuilder.toString();
-        }
-    }
+//    private class DownloadFAQSTask extends AsyncTask<Void, Void, String> {
+//
+//        private final String API_FAQS = "faqs.json";
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            mProgressBar.setVisibility(View.VISIBLE);
+//        }
+//
+//        @Override
+//        protected String doInBackground(Void... params) {
+//            String url = Const.API_BASE_URL + API_FAQS;
+//
+//            FAQsContainer container =
+//                    new DownloadAndParseJSONHelper<>(getActivity(), FAQsContainer.class)
+//                            .DownloadAndParse(url);
+//
+//            return (container != null) ? buildFAQsString(container.getFaqs()) : null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String faqsStr) {
+//            super.onPostExecute(faqsStr);
+//            mProgressBar.setVisibility(View.GONE);
+//
+//            if (faqsStr == null) {
+//                return;
+//            }
+//            mTextView.setText(Html.fromHtml(faqsStr));
+//        }
+//
+//        private String buildFAQsString(List<FAQ> faqs) {
+//            StringBuilder faqsStrBuilder = new StringBuilder("");
+//
+//            for (FAQ faq : faqs) {
+//                faqsStrBuilder.append(String.format(
+//                        "<b>Запитання</b>:<br>%s<br>",
+//                        faq.getQuestion()));
+//                faqsStrBuilder.append(String.format(
+//                        "<br><b>Відповідь</b>:<br>%s<br><br><br>",
+//                        faq.getAnswer()));
+//            }
+//
+//            return faqsStrBuilder.toString();
+//        }
+//    }
 }

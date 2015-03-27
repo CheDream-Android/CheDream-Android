@@ -9,13 +9,12 @@ import java.util.ArrayList;
 
 public class User implements Parcelable {
 
-    private String id;
+    private int id;
+
+    private String username;
 
     @SerializedName("first_name")
     private String firstName;
-
-    @SerializedName("middle_name")
-    private String middleName;
 
     @SerializedName("last_name")
     private String lastName;
@@ -24,14 +23,13 @@ public class User implements Parcelable {
 
     private String about;
 
+    private Picture avatar;
+
     @SerializedName("vkontakte_id")
     private String vkontakteId;
 
     @SerializedName("facebook_id")
     private String facebookId;
-
-    @SerializedName("odnoklassniki_id")
-    private String odnoklassnikiId;
 
     @SerializedName("financial_contributions")
     private ArrayList<FinancialContribution> financialContributions;
@@ -51,12 +49,20 @@ public class User implements Parcelable {
 
     private String skype;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFirstName() {
@@ -65,14 +71,6 @@ public class User implements Parcelable {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
     }
 
     public String getLastName() {
@@ -99,6 +97,14 @@ public class User implements Parcelable {
         this.about = about;
     }
 
+    public Picture getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Picture avatar) {
+        this.avatar = avatar;
+    }
+
     public String getVkontakteId() {
         return vkontakteId;
     }
@@ -113,14 +119,6 @@ public class User implements Parcelable {
 
     public void setFacebookId(String facebookId) {
         this.facebookId = facebookId;
-    }
-
-    public String getOdnoklassnikiId() {
-        return odnoklassnikiId;
-    }
-
-    public void setOdnoklassnikiId(String odnoklassnikiId) {
-        this.odnoklassnikiId = odnoklassnikiId;
     }
 
     public ArrayList<FinancialContribution> getFinancialContributions() {
@@ -186,15 +184,15 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
+        dest.writeInt(this.id);
+        dest.writeString(this.username);
         dest.writeString(this.firstName);
-        dest.writeString(this.middleName);
         dest.writeString(this.lastName);
         dest.writeString(this.birthday);
         dest.writeString(this.about);
+        dest.writeParcelable(this.avatar, 0);
         dest.writeString(this.vkontakteId);
         dest.writeString(this.facebookId);
-        dest.writeString(this.odnoklassnikiId);
         dest.writeSerializable(this.financialContributions);
         dest.writeSerializable(this.equipmentContributions);
         dest.writeSerializable(this.workContributions);
@@ -208,15 +206,15 @@ public class User implements Parcelable {
     }
 
     private User(Parcel in) {
-        this.id = in.readString();
+        this.id = in.readInt();
+        this.username = in.readString();
         this.firstName = in.readString();
-        this.middleName = in.readString();
         this.lastName = in.readString();
         this.birthday = in.readString();
         this.about = in.readString();
+        this.avatar = in.readParcelable(Picture.class.getClassLoader());
         this.vkontakteId = in.readString();
         this.facebookId = in.readString();
-        this.odnoklassnikiId = in.readString();
         this.financialContributions = (ArrayList<FinancialContribution>) in.readSerializable();
         this.equipmentContributions = (ArrayList<FinancialContribution>) in.readSerializable();
         this.workContributions = (ArrayList<FinancialContribution>) in.readSerializable();
@@ -226,7 +224,7 @@ public class User implements Parcelable {
         this.skype = in.readString();
     }
 
-    public static final Creator<User> CREATOR = new Creator<User>() {
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
         public User createFromParcel(Parcel source) {
             return new User(source);
         }

@@ -1,6 +1,7 @@
 package org.chedream.android.fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.facebook.Request;
 import com.facebook.Response;
@@ -18,7 +20,13 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKScope;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.VKUIHelper;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
 import org.chedream.android.helpers.Const;
@@ -33,8 +41,12 @@ public class LoginFragment extends Fragment {
 
     private static final String LOG_TAG = LoginFragment.class.getSimpleName();
 
+    private static String sTokenKey = "VK_ACCESS_TOKEN";
+    private static String[] sMyScope = new String[]{VKScope.PHOTOS, VKScope.NOHTTPS};
+
+    private LoginButton fbLoginButton;
+
     private UiLifecycleHelper mFbUiHelper;
-    //private VKUIHelper mVkUiHelper;
 
     private Session.StatusCallback mStatusCallback =
             new SessionStatusCallback();
@@ -46,9 +58,15 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        VKUIHelper.onCreate(getActivity());
+        VKSdk.initialize(
+                sdkListener,
+                getActivity().getResources().getString(R.string.vkontakte_app_id),
+                VKAccessToken.tokenFromSharedPreferences(getActivity(), sTokenKey));
+
+
         mFbUiHelper = new UiLifecycleHelper(getActivity(), mStatusCallback);
         mFbUiHelper.onCreate(savedInstanceState);
-        VKUIHelper.onCreate(getActivity());
     }
 
     @Override
@@ -57,9 +75,17 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
-        LoginButton fbLoginButton = (LoginButton) view.findViewById(R.id.fb_login_button);
+        fbLoginButton = (LoginButton) view.findViewById(R.id.fb_login_button);
         fbLoginButton.setReadPermissions(Arrays.asList("email", "public_profile"));
         fbLoginButton.setFragment(this);
+
+        Button vkLoginButton = (Button) view.findViewById(R.id.vk_login_button);
+        vkLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VKSdk.authorize(sMyScope, true, false);
+            }
+        });
 
         return view;
     }
@@ -139,4 +165,38 @@ public class LoginFragment extends Fragment {
             onSessionStateChange(session, state, exception);
         }
     }
+
+    private VKSdkListener sdkListener = new VKSdkListener() {
+        @Override
+        public void onCaptchaError(VKError captchaError) {
+            new VKCaptchaDialog(captchaError).show();
+        }
+
+        @Override
+        public void onTokenExpired(VKAccessToken expiredToken) {
+            VKSdk.authorize(sMyScope);
+        }
+
+        @Override
+        public void onAccessDenied(VKError authorizationError) {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(authorizationError.errorMessage)
+                    .show();
+        }
+
+        @Override
+        public void onReceiveNewToken(VKAccessToken newToken) {
+            newToken.saveTokenToSharedPreferences(getActivity(), sTokenKey);
+//            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+//            startActivity(i);
+            Log.d(LOG_TAG, "New User Token received");
+        }
+
+        @Override
+        public void onAcceptUserToken(VKAccessToken token) {
+//            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+//            startActivity(i);
+            Log.d(LOG_TAG, "User Token accepted");
+        }
+    };
 }
