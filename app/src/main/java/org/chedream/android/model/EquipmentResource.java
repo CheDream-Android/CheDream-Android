@@ -14,8 +14,6 @@ public class EquipmentResource {
 
     private int quantity;
 
-    private ArrayList<Dream> dream;
-
     private String title;
 
     private String id;
@@ -40,14 +38,6 @@ public class EquipmentResource {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public ArrayList<Dream> getDream() {
-        return dream;
-    }
-
-    public void setDream(ArrayList<Dream> dream) {
-        this.dream = dream;
     }
 
     public String getTitle() {

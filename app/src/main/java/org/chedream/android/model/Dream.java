@@ -29,9 +29,6 @@ public class Dream implements Parcelable {
     @SerializedName("deleted_at")
     private String deletedAt;
 
-    @SerializedName("users_who_favorites")
-    private ArrayList<User> usersWhoFavorites;
-
     private User author;
 
     @SerializedName("current_status")
@@ -129,14 +126,6 @@ public class Dream implements Parcelable {
 
     public void setDeletedAt(String deletedAt) {
         this.deletedAt = deletedAt;
-    }
-
-    public ArrayList<User> getUsersWhoFavorites() {
-        return usersWhoFavorites;
-    }
-
-    public void setUsersWhoFavorites(ArrayList<User> usersWhoFavorites) {
-        this.usersWhoFavorites = usersWhoFavorites;
     }
 
     public User getAuthor() {
@@ -250,7 +239,6 @@ public class Dream implements Parcelable {
         dest.writeString(this.createdAt);
         dest.writeString(this.updatedAt);
         dest.writeString(this.deletedAt);
-        dest.writeSerializable(this.usersWhoFavorites);
         dest.writeParcelable(this.author, flags);
         dest.writeString(this.currentStatus);
         dest.writeSerializable(this.mediaPictures);
@@ -277,7 +265,6 @@ public class Dream implements Parcelable {
         this.createdAt = in.readString();
         this.updatedAt = in.readString();
         this.deletedAt = in.readString();
-        this.usersWhoFavorites = (ArrayList<User>) in.readSerializable();
         this.author = in.readParcelable(User.class.getClassLoader());
         this.currentStatus = in.readString();
         this.mediaPictures = (ArrayList<Picture>) in.readSerializable();

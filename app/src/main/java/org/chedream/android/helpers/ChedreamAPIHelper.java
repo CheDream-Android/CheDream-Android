@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class ChedreamAPIHelper {
 
-    public static int getFinResQuantity(Dream dream) {
+    public static int getOverallFinResQuantity(Dream dream) {
         int quantity = 0;
 
         for(FinancialResource resource: dream.getDreamFinancialResources()) {
@@ -20,7 +20,7 @@ public class ChedreamAPIHelper {
         return quantity;
     }
 
-    public static int getEquipResQuantity(Dream dream) {
+    public static int getOverallEquipResQuantity(Dream dream) {
         int quantity = 0;
 
         for(EquipmentResource resource: dream.getDreamEquipmentResources()) {
@@ -29,7 +29,7 @@ public class ChedreamAPIHelper {
         return quantity;
     }
 
-    public static int getWorkResQuantity(Dream dream) {
+    public static int getOverallWorkResQuantity(Dream dream) {
         int quantity = 0;
 
         for(WorkResource resource: dream.getDreamWorkResources()) {

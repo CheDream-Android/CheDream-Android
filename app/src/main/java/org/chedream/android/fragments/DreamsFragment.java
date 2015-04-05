@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +32,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.apache.http.Header;
 import org.chedream.android.R;
-import org.chedream.android.activities.DetailsActivity;
 import org.chedream.android.activities.MainActivity;
 import org.chedream.android.database.RealmHelper;
 import org.chedream.android.helpers.ChedreamAPIHelper;
@@ -40,10 +39,7 @@ import org.chedream.android.helpers.ChedreamHttpClient;
 import org.chedream.android.helpers.Const;
 import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
-import org.chedream.android.model.test.DreamRandomizer;
 import org.json.JSONObject;
-
-import java.util.List;
 
 import io.realm.Realm;
 
@@ -133,7 +129,7 @@ public class DreamsFragment extends Fragment {
 //            mRealmHelper = new RealmHelper();
 //            mDreams = mRealmHelper.getAllTestDreams(mRealm);
         } else {
-            ChedreamHttpClient.get(Const.API_ALL_DREAMS, null, new JsonHttpResponseHandler() {
+            ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_DREAMS, null, new JsonHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     super.onStart();
@@ -152,9 +148,14 @@ public class DreamsFragment extends Fragment {
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                            intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
-                            startActivity(intent);
+//                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+//                            intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+//                            startActivity(intent);
+
+                             Log.d("DreamsFragment",
+                                     Integer.toString(ChedreamAPIHelper.getCurrentFinContribQuantity(mDreams.getDreams().get(position))));
+
+
                         }
                     });
 
@@ -259,16 +260,8 @@ public class DreamsFragment extends Fragment {
 
             Dream dream = getDream(position);
 
-            String url;
-
-            if (dream.getCurrentStatus().equals("rejected")) {
-                url = Const.API_BASE_POSTER_URL + "4f78cd20a92f4f88c9a0bce0bfd1242a5a91f46b.jpeg";
-            } else {
-                url = Const.API_BASE_POSTER_URL + dream.getMediaPoster().getProviderReference();
-            }
-
             imageLoader.displayImage(
-                    url,
+                    Const.ChedreamAPI.BASE_POSTER_URL + dream.getMediaPoster().getProviderReference(),
                     viewHolder.mImageViewMain,
                     options);
 
@@ -280,13 +273,13 @@ public class DreamsFragment extends Fragment {
             viewHolder.mBarPeople.setProgress(ChedreamAPIHelper.getCurrentWorkContribQuantity(dream));
             viewHolder.mBarTools.setProgress(ChedreamAPIHelper.getCurrentEquipContribQuantity(dream));
 
-            int visibility = ChedreamAPIHelper.getFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
+            int visibility = ChedreamAPIHelper.getOverallFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerMoney.setVisibility(visibility);
 
-            visibility = ChedreamAPIHelper.getWorkResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
+            visibility = ChedreamAPIHelper.getOverallWorkResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerPeople.setVisibility(visibility);
 
-            visibility = ChedreamAPIHelper.getEquipResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
+            visibility = ChedreamAPIHelper.getOverallEquipResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerTools.setVisibility(visibility);
 
             final int ORANGE = 0xFF9933;

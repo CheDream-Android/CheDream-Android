@@ -69,5 +69,4 @@ public class EquipmentContribution {
     public void setEquipmentResource(EquipmentResource equipmentResource) {
         this.equipmentResource = equipmentResource;
     }
-
 }
