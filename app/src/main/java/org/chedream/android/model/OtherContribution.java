@@ -3,11 +3,15 @@ package org.chedream.android.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class OtherContribution implements Parcelable {
+import java.util.ArrayList;
+
+import io.realm.RealmObject;
+
+public class OtherContribution {
 
     private int quantity;
 
-    private Dream dream;
+    private ArrayList<Dream> dream; //WTF??!
 
     private User user;
 
@@ -23,11 +27,11 @@ public class OtherContribution implements Parcelable {
         this.quantity = quantity;
     }
 
-    public Dream getDream() {
+    public ArrayList<Dream> getDream() {
         return dream;
     }
 
-    public void setDream(Dream dream) {
+    public void setDream(ArrayList<Dream> dream) {
         this.dream = dream;
     }
 
@@ -55,38 +59,4 @@ public class OtherContribution implements Parcelable {
         this.title = title;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.quantity);
-        dest.writeParcelable(this.dream, 0);
-        dest.writeParcelable(this.user, 0);
-        dest.writeString(this.id);
-        dest.writeString(this.title);
-    }
-
-    public OtherContribution() {
-    }
-
-    private OtherContribution(Parcel in) {
-        this.quantity = in.readInt();
-        this.dream = in.readParcelable(Dream.class.getClassLoader());
-        this.user = in.readParcelable(User.class.getClassLoader());
-        this.id = in.readString();
-        this.title = in.readString();
-    }
-
-    public static final Creator<OtherContribution> CREATOR = new Creator<OtherContribution>() {
-        public OtherContribution createFromParcel(Parcel source) {
-            return new OtherContribution(source);
-        }
-
-        public OtherContribution[] newArray(int size) {
-            return new OtherContribution[size];
-        }
-    };
 }

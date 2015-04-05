@@ -7,11 +7,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class FinancialResource implements Parcelable {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class FinancialResource {
 
     private int quantity;
 
-    private Dream dream;
+    private ArrayList<Dream> dream; //wtf? we dont need here any dreams, lol
 
     private String title;
 
@@ -28,11 +31,11 @@ public class FinancialResource implements Parcelable {
         this.quantity = quantity;
     }
 
-    public Dream getDream() {
+    public ArrayList<Dream> getDream() {
         return dream;
     }
 
-    public void setDream(Dream dream) {
+    public void setDream(ArrayList<Dream> dream) {
         this.dream = dream;
     }
 
@@ -60,38 +63,4 @@ public class FinancialResource implements Parcelable {
         this.financialContributes = financialContributes;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.quantity);
-        dest.writeParcelable(this.dream, 0);
-        dest.writeString(this.title);
-        dest.writeString(this.id);
-        dest.writeSerializable(this.financialContributes);
-    }
-
-    public FinancialResource() {
-    }
-
-    private FinancialResource(Parcel in) {
-        this.quantity = in.readInt();
-        this.dream = in.readParcelable(Dream.class.getClassLoader());
-        this.title = in.readString();
-        this.id = in.readString();
-        this.financialContributes = (ArrayList<FinancialContribution>) in.readSerializable();
-    }
-
-    public static final Creator<FinancialResource> CREATOR = new Creator<FinancialResource>() {
-        public FinancialResource createFromParcel(Parcel source) {
-            return new FinancialResource(source);
-        }
-
-        public FinancialResource[] newArray(int size) {
-            return new FinancialResource[size];
-        }
-    };
 }

@@ -5,18 +5,23 @@
     android:orientation="vertical"
     tools:context="org.chedream.android.fragments.LoginFragment">
 
-    <com.facebook.widget.LoginButton
-        android:id="@+id/fb_login_button"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+        <com.facebook.widget.LoginButton
+            android:id="@+id/fb_login_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <Button
+            android:id="@+id/vk_login_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Log in with vk"/>
 
-    <TextView
-        android:id="@+id/user_info_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="34dp" />
+        </LinearLayout>
+
 
 </RelativeLayout>

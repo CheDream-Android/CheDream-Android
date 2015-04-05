@@ -5,7 +5,11 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FinancialContribution implements Parcelable {
+import io.realm.RealmObject;
+
+public class FinancialContribution {
+
+    private int id;
 
     private int quantity;
 
@@ -15,7 +19,15 @@ public class FinancialContribution implements Parcelable {
     private User user;
 
     @SerializedName("financial_resource")
-    private FinancialResource financialResourcse;
+    private FinancialResource financialResource;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getQuantity() {
         return quantity;
@@ -42,43 +54,10 @@ public class FinancialContribution implements Parcelable {
     }
 
     public FinancialResource getFinancialResourcse() {
-        return financialResourcse;
+        return financialResource;
     }
 
     public void setFinancialResourcse(FinancialResource financialResourcse) {
-        this.financialResourcse = financialResourcse;
+        this.financialResource = financialResourcse;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.quantity);
-        dest.writeByte(hiddenContributor ? (byte) 1 : (byte) 0);
-        dest.writeParcelable(this.user, 0);
-        dest.writeParcelable(this.financialResourcse, flags);
-    }
-
-    public FinancialContribution() {
-    }
-
-    private FinancialContribution(Parcel in) {
-        this.quantity = in.readInt();
-        this.hiddenContributor = in.readByte() != 0;
-        this.user = in.readParcelable(User.class.getClassLoader());
-        this.financialResourcse = in.readParcelable(FinancialResource.class.getClassLoader());
-    }
-
-    public static final Creator<FinancialContribution> CREATOR = new Creator<FinancialContribution>() {
-        public FinancialContribution createFromParcel(Parcel source) {
-            return new FinancialContribution(source);
-        }
-
-        public FinancialContribution[] newArray(int size) {
-            return new FinancialContribution[size];
-        }
-    };
 }

@@ -1,7 +1,9 @@
 package org.chedream.android.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
@@ -22,17 +24,23 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import org.apache.http.Header;
 import org.chedream.android.R;
 import org.chedream.android.activities.DetailsActivity;
 import org.chedream.android.activities.MainActivity;
-import org.chedream.android.database.RealmHelper;
+import org.chedream.android.helpers.ChedreamAPIHelper;
+import org.chedream.android.helpers.ChedreamHttpClient;
 import org.chedream.android.helpers.Const;
-import org.chedream.android.model.test.Dream;
-import org.chedream.android.model.test.DreamRandomizer;
+import org.chedream.android.helpers.RealmHelper;
+import org.chedream.android.model.Dream;
+import org.chedream.android.model.Dreams;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -40,12 +48,13 @@ import io.realm.Realm;
 
 public class DreamsFragment extends Fragment {
 
-    private List<Dream> mDreams;
+    private Dreams mDreams;
+    private List<Dream> mDreamsFromDB;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private ActionBarActivity mActivity;
     private Realm mRealm;
-    private RealmHelper mRealmHelper;
+    private RealmHelper mRealmHelper = new RealmHelper();
     private GridViewAdapter mGridViewAdapter;
 
 
@@ -65,8 +74,8 @@ public class DreamsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        //if it wont work - move to onViewCreated  part of code below cause it always were there
         mActivity = (ActionBarActivity) getActivity();
+        Realm.deleteRealmFile(mActivity);
         mRealm = Realm.getInstance(mActivity);
     }
 
@@ -85,7 +94,7 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
             menu.findItem(R.id.action_delete_all_favorites).setVisible(true);
         }
     }
@@ -94,9 +103,7 @@ public class DreamsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete_all_favorites:
-                mRealm.close();
-                Realm.deleteRealmFile(mActivity);
-                mDreams.clear();
+                mRealmHelper.deleteAllDreamsFromDatabase(mRealm, mActivity);
                 mGridViewAdapter.notifyDataSetChanged();
         }
         return super.onOptionsItemSelected(item);
@@ -111,37 +118,78 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        GridView gridView = (GridView) view.findViewById(R.id.grid_view);
+        final GridView gridView = (GridView) view.findViewById(R.id.grid_view);
         int orientation = getResources().getConfiguration().orientation;
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
-            mRealmHelper = new RealmHelper();
-            mDreams = mRealmHelper.getAllTestDreams(mRealm);
+
+        final ProgressBar downloadingProgressBar =
+                (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
+
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
+
         } else {
-            mDreams = DreamRandomizer.getDreams(getActivity());
+            ChedreamHttpClient.get(Const.API_ALL_DREAMS, null, new JsonHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    super.onStart();
+                    downloadingProgressBar.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                    downloadingProgressBar.setVisibility(View.GONE);
+
+                    Gson gson = new Gson();
+                    mDreams = gson.fromJson(response.toString(), Dreams.class);
+                    mGridViewAdapter = new GridViewAdapter(getActivity());
+                    gridView.setAdapter(mGridViewAdapter);
+                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                            intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+                            startActivity(intent);
+                        }
+                    });
+
+
+                    options = new DisplayImageOptions.Builder()
+                            .cacheOnDisk(true)
+                            .cacheInMemory(true)
+                            .considerExifParams(true)
+                            .build();
+
+                    imageLoader = ImageLoader.getInstance();
+                    imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
+
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setMessage(getActivity().getResources().getString(R.string.dialog_no_internet_message))
+                                    .setCancelable(false)
+                                    .setNegativeButton("OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
+                    });
+                }
+            });
+
         }
-        mGridViewAdapter = new GridViewAdapter(getActivity());
-        gridView.setAdapter(mGridViewAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.get(position));
-                startActivity(intent);
-            }
-        });
 
-
-        options = new DisplayImageOptions.Builder()
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .build();
-
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
     }
 
     @Override
@@ -162,12 +210,12 @@ public class DreamsFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return mDreams.size();
+            return mDreams.getDreams().size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mDreams.get(position);
+            return mDreams.getDreams().get(position);
         }
 
         public Dream getDream(int position) {
@@ -208,26 +256,34 @@ public class DreamsFragment extends Fragment {
 
             Dream dream = getDream(position);
 
+            String url;
+
+            if (dream.getCurrentStatus().equals("rejected")) {
+                url = Const.API_BASE_POSTER_URL + "4f78cd20a92f4f88c9a0bce0bfd1242a5a91f46b.jpeg";
+            } else {
+                url = Const.API_BASE_POSTER_URL + dream.getMediaPoster().getProviderReference();
+            }
+
             imageLoader.displayImage(
-                    dream.getImage(),
+                    url,
                     viewHolder.mImageViewMain,
                     options);
 
             viewHolder.mTitle.setText(dream.getTitle());
 
-            viewHolder.mCountLikes.setText(Integer.toString(dream.getLikes()));
+            viewHolder.mCountLikes.setText(Integer.toString(1));
 
-            viewHolder.mBarMoney.setProgress(dream.getMoneyCurrent());
-            viewHolder.mBarPeople.setProgress(dream.getPeopleCurrent());
-            viewHolder.mBarTools.setProgress(dream.getToolsCurrent());
+            viewHolder.mBarMoney.setProgress(ChedreamAPIHelper.getCurrentFinContribQuantity(dream));
+            viewHolder.mBarPeople.setProgress(ChedreamAPIHelper.getCurrentWorkContribQuantity(dream));
+            viewHolder.mBarTools.setProgress(ChedreamAPIHelper.getCurrentEquipContribQuantity(dream));
 
-            int visibility = dream.getMoneyMax() != 0 ? View.VISIBLE : View.GONE;
+            int visibility = ChedreamAPIHelper.getFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerMoney.setVisibility(visibility);
 
-            visibility = dream.getPeopleMax() != 0 ? View.VISIBLE : View.GONE;
+            visibility = ChedreamAPIHelper.getWorkResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerPeople.setVisibility(visibility);
 
-            visibility = dream.getToolsMax() != 0 ? View.VISIBLE : View.GONE;
+            visibility = ChedreamAPIHelper.getEquipResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
             viewHolder.mContainerTools.setVisibility(visibility);
 
             final int ORANGE = 0xFF9933;
