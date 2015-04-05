@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
-import io.realm.RealmObject;
 
 public class Dream implements Parcelable {
     private int id;
@@ -250,19 +248,23 @@ public class Dream implements Parcelable {
         dest.writeString(this.createdAt);
         dest.writeString(this.updatedAt);
         dest.writeString(this.deletedAt);
-        dest.writeSerializable(this.usersWhoFavorites);
         dest.writeParcelable(this.author, flags);
         dest.writeString(this.currentStatus);
-        dest.writeSerializable(this.mediaPictures);
-        dest.writeSerializable(this.mediaCompletedPictures);
+        dest.writeList(this.mediaCompletedPictures);
         dest.writeParcelable(this.mediaPoster, flags);
-        dest.writeSerializable(this.dreamFinancialResources);
-        dest.writeSerializable(this.dreamEquipmentResources);
-        dest.writeSerializable(this.dreamWorkResources);
-        dest.writeSerializable(this.dreamFinancialContributions);
-        dest.writeSerializable(this.dreamEquipmentContributions);
-        dest.writeSerializable(this.dreamWorkContributions);
-        dest.writeSerializable(this.dreamOtherContributions);
+        /**
+         * To aviod "Parcelable encountered IOException writing serializable object (name = java.util.ArrayList)"
+         * I've replaced 'writeSerializeble' with 'writeList'
+         */
+        dest.writeTypedList(this.mediaPictures);
+        dest.writeTypedList(this.usersWhoFavorites);
+        dest.writeTypedList(this.dreamFinancialResources);
+        dest.writeTypedList(this.dreamEquipmentResources);
+        dest.writeTypedList(this.dreamWorkResources);
+        dest.writeTypedList(this.dreamFinancialContributions);
+        dest.writeTypedList(this.dreamEquipmentContributions);
+        dest.writeTypedList(this.dreamWorkContributions);
+        dest.writeTypedList(this.dreamOtherContributions);
     }
 
     public Dream() {
@@ -277,19 +279,23 @@ public class Dream implements Parcelable {
         this.createdAt = in.readString();
         this.updatedAt = in.readString();
         this.deletedAt = in.readString();
-        this.usersWhoFavorites = (ArrayList<User>) in.readSerializable();
+        in.
+                readTypedList(
+                        usersWhoFavorites,
+                        User
+                                .CREATOR);
         this.author = in.readParcelable(User.class.getClassLoader());
         this.currentStatus = in.readString();
-        this.mediaPictures = (ArrayList<Picture>) in.readSerializable();
-        this.mediaCompletedPictures = (ArrayList<Picture>) in.readSerializable();
+        in.readTypedList(mediaPictures, Picture.CREATOR);
+        in.readTypedList(mediaCompletedPictures, Picture.CREATOR);
         this.mediaPoster = in.readParcelable(Picture.class.getClassLoader());
-        this.dreamFinancialResources = (ArrayList<FinancialResource>) in.readSerializable();
-        this.dreamEquipmentResources = (ArrayList<EquipmentResource>) in.readSerializable();
-        this.dreamWorkResources = (ArrayList<WorkResource>) in.readSerializable();
-        this.dreamFinancialContributions = (ArrayList<FinancialContribution>) in.readSerializable();
-        this.dreamEquipmentContributions = (ArrayList<EquipmentContribution>) in.readSerializable();
-        this.dreamWorkContributions = (ArrayList<WorkContribution>) in.readSerializable();
-        this.dreamOtherContributions = (ArrayList<OtherContribution>) in.readSerializable();
+        in.readTypedList(dreamFinancialResources, FinancialResource.CREATOR);
+        in.readTypedList(dreamEquipmentResources, EquipmentResource.CREATOR);
+        in.readTypedList(dreamWorkResources, WorkResource.CREATOR);
+        in.readTypedList(dreamFinancialContributions, FinancialContribution.CREATOR);
+        in.readTypedList(dreamEquipmentContributions, EquipmentContribution.CREATOR);
+        in.readTypedList(dreamWorkContributions, WorkContribution.CREATOR);
+        in.readTypedList(dreamOtherContributions, OtherContribution.CREATOR);
     }
 
     public static final Parcelable.Creator<Dream> CREATOR = new Parcelable.Creator<Dream>() {

@@ -1,10 +1,14 @@
 package org.chedream.android.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class EquipmentResource {
+public class EquipmentResource implements Parcelable {
 
     @SerializedName("created_at")
     private String createdAt;
@@ -79,4 +83,63 @@ public class EquipmentResource {
         this.equipmentContributes = equipmentContributes;
     }
 
+
+    protected EquipmentResource(Parcel in) {
+        createdAt = in.readString();
+        quantity = in.readInt();
+        if (in.readByte() == 0x01) {
+            dream = new ArrayList<Dream>();
+            in.readList(dream, Dream.class.getClassLoader());
+        } else {
+            dream = null;
+        }
+        title = in.readString();
+        id = in.readString();
+        quantityType = in.readString();
+        if (in.readByte() == 0x01) {
+            equipmentContributes = new ArrayList<EquipmentContribution>();
+            in.readList(equipmentContributes, EquipmentContribution.class.getClassLoader());
+        } else {
+            equipmentContributes = null;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(createdAt);
+        dest.writeInt(quantity);
+        if (dream == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(dream);
+        }
+        dest.writeString(title);
+        dest.writeString(id);
+        dest.writeString(quantityType);
+        if (equipmentContributes == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(equipmentContributes);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<EquipmentResource> CREATOR = new Parcelable.Creator<EquipmentResource>() {
+        @Override
+        public EquipmentResource createFromParcel(Parcel in) {
+            return new EquipmentResource(in);
+        }
+
+        @Override
+        public EquipmentResource[] newArray(int size) {
+            return new EquipmentResource[size];
+        }
+    };
 }

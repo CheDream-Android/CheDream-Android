@@ -107,9 +107,9 @@ public class DetailsFragment extends Fragment {
                     }
                 });
 
-        mDream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
+        mDream = (Dream) getArguments().getParcelable(ARG_SECTION_NUMBER);
         ActionBar actionBar = mActivity.getSupportActionBar();
-        actionBar.setTitle(mDream.getTitle());
+//        actionBar.setTitle(mDream.getTitle());
 
         ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
         ImageLoader imageLoader = ImageLoader.getInstance();

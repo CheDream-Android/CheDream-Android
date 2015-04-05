@@ -7,7 +7,9 @@ import com.google.gson.annotations.SerializedName;
 
 import org.chedream.android.database.RealmUser;
 
+import java.security.spec.ECField;
 import java.util.ArrayList;
+import java.util.List;
 
 public class User implements Parcelable {
 
@@ -37,13 +39,13 @@ public class User implements Parcelable {
     private ArrayList<FinancialContribution> financialContributions;
 
     @SerializedName("equipment_contributions")
-    private ArrayList<FinancialContribution> equipmentContributions;
+    private ArrayList<EquipmentContribution> equipmentContributions;
 
     @SerializedName("work_contributions")
-    private ArrayList<FinancialContribution> workContributions;
+    private ArrayList<WorkContribution> workContributions;
 
     @SerializedName("other_contributions")
-    private ArrayList<FinancialContribution> otherContributions;
+    private ArrayList<OtherContribution> otherContributions;
 
     private ArrayList<Dream> dreams;
 
@@ -141,27 +143,27 @@ public class User implements Parcelable {
         this.financialContributions = financialContributions;
     }
 
-    public ArrayList<FinancialContribution> getEquipmentContributions() {
+    public ArrayList<EquipmentContribution> getEquipmentContributions() {
         return equipmentContributions;
     }
 
-    public void setEquipmentContributions(ArrayList<FinancialContribution> equipmentContributions) {
+    public void setEquipmentContributions(ArrayList<EquipmentContribution> equipmentContributions) {
         this.equipmentContributions = equipmentContributions;
     }
 
-    public ArrayList<FinancialContribution> getWorkContributions() {
+    public ArrayList<WorkContribution> getWorkContributions() {
         return workContributions;
     }
 
-    public void setWorkContributions(ArrayList<FinancialContribution> workContributions) {
+    public void setWorkContributions(ArrayList<WorkContribution> workContributions) {
         this.workContributions = workContributions;
     }
 
-    public ArrayList<FinancialContribution> getOtherContributions() {
+    public ArrayList<OtherContribution> getOtherContributions() {
         return otherContributions;
     }
 
-    public void setOtherContributions(ArrayList<FinancialContribution> otherContributions) {
+    public void setOtherContributions(ArrayList<OtherContribution> otherContributions) {
         this.otherContributions = otherContributions;
     }
 
@@ -205,11 +207,13 @@ public class User implements Parcelable {
         dest.writeParcelable(this.avatar, 0);
         dest.writeString(this.vkontakteId);
         dest.writeString(this.facebookId);
-        dest.writeSerializable(this.financialContributions);
-        dest.writeSerializable(this.equipmentContributions);
-        dest.writeSerializable(this.workContributions);
-        dest.writeSerializable(this.otherContributions);
-        dest.writeSerializable(this.dreams);
+
+        dest.writeList(this.financialContributions);
+        dest.writeList(this.equipmentContributions);
+        dest.writeList(this.workContributions);
+        dest.writeList(this.otherContributions);
+        dest.writeList(this.dreams);
+
         dest.writeString(this.phone);
         dest.writeString(this.skype);
     }
@@ -227,11 +231,11 @@ public class User implements Parcelable {
         this.avatar = in.readParcelable(Picture.class.getClassLoader());
         this.vkontakteId = in.readString();
         this.facebookId = in.readString();
-        this.financialContributions = (ArrayList<FinancialContribution>) in.readSerializable();
-        this.equipmentContributions = (ArrayList<FinancialContribution>) in.readSerializable();
-        this.workContributions = (ArrayList<FinancialContribution>) in.readSerializable();
-        this.otherContributions = (ArrayList<FinancialContribution>) in.readSerializable();
-        this.dreams = (ArrayList<Dream>) in.readSerializable();
+        in.readTypedList(financialContributions,FinancialContribution.CREATOR);
+        in.readTypedList(equipmentContributions,EquipmentContribution.CREATOR);
+        in.readTypedList(workContributions,WorkContribution.CREATOR);
+        in.readTypedList(otherContributions,OtherContribution.CREATOR);
+        in.readTypedList(dreams,Dream.CREATOR);
         this.phone = in.readString();
         this.skype = in.readString();
     }
