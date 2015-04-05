@@ -1,11 +1,7 @@
 package org.chedream.android.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
-import io.realm.RealmObject;
 
 public class FinancialContribution {
 

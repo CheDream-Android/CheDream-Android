@@ -40,6 +40,12 @@ import org.chedream.android.helpers.Const;
 import org.chedream.android.helpers.RealmHelper;
 import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
+import org.chedream.android.helpers.RealmHelper;
+import org.chedream.android.helpers.ChedreamAPIHelper;
+import org.chedream.android.helpers.ChedreamHttpClient;
+import org.chedream.android.helpers.Const;
+import org.chedream.android.model.Dream;
+import org.chedream.android.model.Dreams;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -49,12 +55,11 @@ import io.realm.Realm;
 public class DreamsFragment extends Fragment {
 
     private Dreams mDreams;
-    private List<Dream> mDreamsFromDB;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private ActionBarActivity mActivity;
     private Realm mRealm;
-    private RealmHelper mRealmHelper = new RealmHelper();
+    private RealmHelper mRealmHelper;
     private GridViewAdapter mGridViewAdapter;
 
 
@@ -74,8 +79,8 @@ public class DreamsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        //if it wont work - move to onViewCreated  part of code below cause it always were there
         mActivity = (ActionBarActivity) getActivity();
-        Realm.deleteRealmFile(mActivity);
         mRealm = Realm.getInstance(mActivity);
     }
 
@@ -94,18 +99,20 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
             menu.findItem(R.id.action_delete_all_favorites).setVisible(true);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete_all_favorites:
-                mRealmHelper.deleteAllDreamsFromDatabase(mRealm, mActivity);
-                mGridViewAdapter.notifyDataSetChanged();
-        }
+//        switch (item.getItemId()) {
+//            case R.id.action_delete_all_favorites:
+//                mRealm.close();
+//                Realm.deleteRealmFile(mActivity);
+//                mDreams.clear();
+//                mGridViewAdapter.notifyDataSetChanged();
+//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -127,8 +134,9 @@ public class DreamsFragment extends Fragment {
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
 
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
-
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
+//            mRealmHelper = new RealmHelper();
+//            mDreams = mRealmHelper.getAllTestDreams(mRealm);
         } else {
             ChedreamHttpClient.get(Const.API_ALL_DREAMS, null, new JsonHttpResponseHandler() {
                 @Override

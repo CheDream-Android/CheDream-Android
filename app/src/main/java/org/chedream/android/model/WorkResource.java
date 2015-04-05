@@ -1,14 +1,8 @@
 package org.chedream.android.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-
-import io.realm.RealmList;
-import io.realm.RealmObject;
 
 public class WorkResource {
 

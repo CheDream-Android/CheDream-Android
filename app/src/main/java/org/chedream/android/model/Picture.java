@@ -20,17 +20,6 @@ public class Picture implements Parcelable {
 
     private int height;
 
-    public Picture() {
-    }
-
-    private Picture(Parcel in) {
-        this.id = in.readInt();
-        this.name = in.readString();
-        this.providerReference = in.readString();
-        this.width = in.readInt();
-        this.height = in.readInt();
-    }
-
     public Picture (RealmPicture realmPicture) {
         this.id = realmPicture.getId();
         this.name = realmPicture.getName();
@@ -92,6 +81,17 @@ public class Picture implements Parcelable {
         dest.writeString(this.providerReference);
         dest.writeInt(this.width);
         dest.writeInt(this.height);
+    }
+
+    public Picture() {
+    }
+
+    private Picture(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.providerReference = in.readString();
+        this.width = in.readInt();
+        this.height = in.readInt();
     }
 
     public static final Parcelable.Creator<Picture> CREATOR = new Parcelable.Creator<Picture>() {

@@ -50,7 +50,6 @@ public class User implements Parcelable {
     private String phone;
 
     private String skype;
-
     /**
      * Current constructor will cast RealmUser to User
      */

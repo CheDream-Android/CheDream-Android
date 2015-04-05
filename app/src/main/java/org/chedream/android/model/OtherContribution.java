@@ -5,12 +5,9 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-import io.realm.RealmObject;
-
 public class OtherContribution {
 
     private int quantity;
-
     private ArrayList<Dream> dream; //WTF??!
 
     private User user;
