@@ -23,12 +23,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
-import org.chedream.android.database.RealmHelper;
+import org.chedream.android.helpers.Const;
+import org.chedream.android.helpers.RealmHelper;
 import org.chedream.android.helpers.RoundedImageViewHelper;
-import org.chedream.android.model.test.Dream;
+import org.chedream.android.model.Dream;
 import org.chedream.android.views.NotifyingScrollView;
 
 import io.realm.Realm;
+
 
 public class DetailsFragment extends Fragment {
     public static final String ARG_SECTION_NUMBER = "args";
@@ -39,7 +41,7 @@ public class DetailsFragment extends Fragment {
     public static DetailsFragment getInstance(Dream dream) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_SECTION_NUMBER, dream);
+        args.putParcelable(ARG_SECTION_NUMBER, dream);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,7 +50,6 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        //if it wont work - move to onViewCreated  part of code below cause it always were there
         mActivity = (ActionBarActivity) getActivity();
         mRealm = Realm.getInstance(mActivity);
     }
@@ -76,8 +77,7 @@ public class DetailsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_add_to_favorite:
                 RealmHelper realmHelper = new RealmHelper();
-                //Dream dream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
-                realmHelper.addTestDreamToDatabase(mRealm,mDream);
+                realmHelper.addDreamToDatabase(mRealm, mDream);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -107,9 +107,9 @@ public class DetailsFragment extends Fragment {
                     }
                 });
 
-        mDream = (Dream) getArguments().getSerializable(ARG_SECTION_NUMBER);
+        mDream = (Dream) getArguments().getParcelable(ARG_SECTION_NUMBER);
         ActionBar actionBar = mActivity.getSupportActionBar();
-        actionBar.setTitle(mDream.getTitle());
+//        actionBar.setTitle(mDream.getTitle());
 
         ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -124,24 +124,31 @@ public class DetailsFragment extends Fragment {
                 .considerExifParams(true)
                 .build();
 
+        String url;
+
+        if (mDream.getCurrentStatus().equals("rejected")) {
+            url = Const.API_BASE_POSTER_URL + "4f78cd20a92f4f88c9a0bce0bfd1242a5a91f46b.jpeg";
+        } else {
+            url = Const.API_BASE_POSTER_URL + mDream.getMediaPoster().getProviderReference();
+        }
         imageLoader.displayImage(
-                mDream.getImage(),
+                url,
                 mainImage,
                 options
         );
 
         RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.img_avatar);
         imageLoader.displayImage(
-                mDream.getImage(),
+                mDream.getAuthor().getAvatar().getProviderReference(),
                 avatar,
                 options
         );
 
         TextView likesNumber = (TextView) view.findViewById(R.id.txt_likes_number);
-        likesNumber.setText(R.string.sample_count_of_likes); //get number of likes, when API will be available to give it
+        likesNumber.setText(mDream.getUsersWhoFavorites().size()); //get number of likes, when API will be available to give it
 
         TextView userName = (TextView) view.findViewById(R.id.txt_user_name);
-        userName.setText(R.string.sample_user_name); //only test try for now. It will get name from User-class
+        userName.setText(mDream.getAuthor().getUsername()); //only test try for now. It will get name from User-class
 
         TextView dreamTitle = (TextView) view.findViewById(R.id.dream_title_textview);
         dreamTitle.setText(mDream.getTitle());

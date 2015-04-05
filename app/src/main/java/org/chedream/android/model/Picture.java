@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.chedream.android.database.RealmPicture;
+
 public class Picture implements Parcelable {
 
     private int id;
@@ -17,6 +19,14 @@ public class Picture implements Parcelable {
     private int width;
 
     private int height;
+
+    public Picture (RealmPicture realmPicture) {
+        this.id = realmPicture.getId();
+        this.name = realmPicture.getName();
+        this.providerReference = realmPicture.getProviderReference();
+        this.width = realmPicture.getWidth();
+        this.height = realmPicture.getHeight();
+    }
 
     public int getId() {
         return id;
@@ -54,10 +64,10 @@ public class Picture implements Parcelable {
         return height;
     }
 
+
     public void setHeight(int height) {
         this.height = height;
     }
-
 
     @Override
     public int describeContents() {

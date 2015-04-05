@@ -33,7 +33,13 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.apache.http.Header;
 import org.chedream.android.R;
 import org.chedream.android.activities.MainActivity;
-import org.chedream.android.database.RealmHelper;
+import org.chedream.android.helpers.ChedreamAPIHelper;
+import org.chedream.android.helpers.ChedreamHttpClient;
+import org.chedream.android.helpers.Const;
+import org.chedream.android.helpers.RealmHelper;
+import org.chedream.android.model.Dream;
+import org.chedream.android.model.Dreams;
+import org.chedream.android.helpers.RealmHelper;
 import org.chedream.android.helpers.ChedreamAPIHelper;
 import org.chedream.android.helpers.ChedreamHttpClient;
 import org.chedream.android.helpers.Const;
@@ -70,7 +76,6 @@ public class DreamsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        //if it wont work - move to onViewCreated  part of code below cause it always were there
         mActivity = (ActionBarActivity) getActivity();
         mRealm = Realm.getInstance(mActivity);
     }
@@ -125,7 +130,7 @@ public class DreamsFragment extends Fragment {
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
 
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
 //            mRealmHelper = new RealmHelper();
 //            mDreams = mRealmHelper.getAllTestDreams(mRealm);
         } else {

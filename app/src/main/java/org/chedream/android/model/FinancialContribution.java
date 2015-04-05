@@ -5,7 +5,10 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FinancialContribution{
+import java.io.Serializable;
+
+
+public class FinancialContribution implements Parcelable {
 
     private int id;
 
@@ -58,4 +61,39 @@ public class FinancialContribution{
     public void setFinancialResourcse(FinancialResource financialResourcse) {
         this.financialResource = financialResourcse;
     }
+
+    protected FinancialContribution(Parcel in) {
+        id = in.readInt();
+        quantity = in.readInt();
+        hiddenContributor = in.readByte() != 0x00;
+        user = (User) in.readValue(User.class.getClassLoader());
+        financialResource = (FinancialResource) in.readValue(FinancialResource.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeInt(quantity);
+        dest.writeByte((byte) (hiddenContributor ? 0x01 : 0x00));
+        dest.writeValue(user);
+        dest.writeValue(financialResource);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<FinancialContribution> CREATOR = new Parcelable.Creator<FinancialContribution>() {
+        @Override
+        public FinancialContribution createFromParcel(Parcel in) {
+            return new FinancialContribution(in);
+        }
+
+        @Override
+        public FinancialContribution[] newArray(int size) {
+            return new FinancialContribution[size];
+        }
+    };
 }
