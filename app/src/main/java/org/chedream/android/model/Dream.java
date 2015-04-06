@@ -27,6 +27,9 @@ public class Dream implements Parcelable {
     @SerializedName("deleted_at")
     private String deletedAt;
 
+    @SerializedName("users_who_favorites")
+    private ArrayList<User> usersWhoFavorites;
+
     private User author;
 
     @SerializedName("current_status")
@@ -124,6 +127,14 @@ public class Dream implements Parcelable {
 
     public void setDeletedAt(String deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public ArrayList<User> getUsersWhoFavorites() {
+        return usersWhoFavorites;
+    }
+
+    public void setUsersWhoFavorites(ArrayList<User> usersWhoFavorites) {
+        this.usersWhoFavorites = usersWhoFavorites;
     }
 
     public User getAuthor() {
@@ -246,7 +257,6 @@ public class Dream implements Parcelable {
          * I've replaced 'writeSerializeble' with 'writeList'
          */
         dest.writeTypedList(this.mediaPictures);
-        dest.writeTypedList(this.usersWhoFavorites);
         dest.writeTypedList(this.dreamFinancialResources);
         dest.writeTypedList(this.dreamEquipmentResources);
         dest.writeTypedList(this.dreamWorkResources);
@@ -268,11 +278,6 @@ public class Dream implements Parcelable {
         this.createdAt = in.readString();
         this.updatedAt = in.readString();
         this.deletedAt = in.readString();
-        in.
-                readTypedList(
-                        usersWhoFavorites,
-                        User
-                                .CREATOR);
         this.author = in.readParcelable(User.class.getClassLoader());
         this.currentStatus = in.readString();
         in.readTypedList(mediaPictures, Picture.CREATOR);

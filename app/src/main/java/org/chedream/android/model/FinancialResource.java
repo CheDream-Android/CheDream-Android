@@ -53,12 +53,6 @@ public class FinancialResource implements Parcelable {
 
     protected FinancialResource(Parcel in) {
         quantity = in.readInt();
-        if (in.readByte() == 0x01) {
-            dream = new ArrayList<Dream>();
-            in.readList(dream, Dream.class.getClassLoader());
-        } else {
-            dream = null;
-        }
         title = in.readString();
         id = in.readString();
         if (in.readByte() == 0x01) {
@@ -77,12 +71,6 @@ public class FinancialResource implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(quantity);
-        if (dream == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(dream);
-        }
         dest.writeString(title);
         dest.writeString(id);
         if (financialContributes == null) {

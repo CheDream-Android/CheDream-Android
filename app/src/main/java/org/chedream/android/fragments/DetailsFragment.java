@@ -124,15 +124,8 @@ public class DetailsFragment extends Fragment {
                 .considerExifParams(true)
                 .build();
 
-        String url;
-
-        if (mDream.getCurrentStatus().equals("rejected")) {
-            url = Const.API_BASE_POSTER_URL + "4f78cd20a92f4f88c9a0bce0bfd1242a5a91f46b.jpeg";
-        } else {
-            url = Const.API_BASE_POSTER_URL + mDream.getMediaPoster().getProviderReference();
-        }
         imageLoader.displayImage(
-                url,
+                Const.ChedreamAPI.BASE_POSTER_URL + mDream.getMediaPoster().getProviderReference(),
                 mainImage,
                 options
         );

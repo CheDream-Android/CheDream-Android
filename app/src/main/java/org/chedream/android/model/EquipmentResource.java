@@ -77,12 +77,6 @@ public class EquipmentResource implements Parcelable {
     protected EquipmentResource(Parcel in) {
         createdAt = in.readString();
         quantity = in.readInt();
-        if (in.readByte() == 0x01) {
-            dream = new ArrayList<Dream>();
-            in.readList(dream, Dream.class.getClassLoader());
-        } else {
-            dream = null;
-        }
         title = in.readString();
         id = in.readString();
         quantityType = in.readString();
@@ -103,12 +97,6 @@ public class EquipmentResource implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(createdAt);
         dest.writeInt(quantity);
-        if (dream == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(dream);
-        }
         dest.writeString(title);
         dest.writeString(id);
         dest.writeString(quantityType);

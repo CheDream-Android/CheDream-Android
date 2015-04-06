@@ -77,6 +77,7 @@ public class DreamsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mActivity = (ActionBarActivity) getActivity();
+        Realm.deleteRealmFile(mActivity);
         mRealm = Realm.getInstance(mActivity);
     }
 
