@@ -255,6 +255,7 @@ public class Dream implements Parcelable {
          * To aviod "Parcelable encountered IOException writing serializable object (name = java.util.ArrayList)"
          * I've replaced 'writeSerializeble' with 'writeTypedArrayList'
          */
+        dest.writeTypedList(this.usersWhoFavorites);
         dest.writeTypedList(this.mediaCompletedPictures);
         dest.writeTypedList(this.mediaPictures);
         dest.writeTypedList(this.dreamFinancialResources);
@@ -279,14 +280,12 @@ public class Dream implements Parcelable {
         this.updatedAt = in.readString();
         this.deletedAt = in.readString();
         this.author = in.readParcelable(User.class.getClassLoader());
-        //line below showed 'Unable to cast from Picture to User', but I did some magic, and now the exception is:
-        //Caused by: android.os.BadParcelableException: ClassNotFoundException when unmarshalling: submitted
-        this.mediaPoster = in.readParcelable(Picture.class.getClassLoader());
         this.currentStatus = in.readString();
+        this.mediaPoster = in.readParcelable(Picture.class.getClassLoader());
 
         usersWhoFavorites = in.createTypedArrayList(User.CREATOR);
-        mediaPictures = in.createTypedArrayList(Picture.CREATOR);
         mediaCompletedPictures = in.createTypedArrayList(Picture.CREATOR);
+        mediaPictures = in.createTypedArrayList(Picture.CREATOR);
         dreamFinancialResources = in.createTypedArrayList(FinancialResource.CREATOR);
         dreamEquipmentResources = in.createTypedArrayList(EquipmentResource.CREATOR);
         dreamWorkResources = in.createTypedArrayList(WorkResource.CREATOR);

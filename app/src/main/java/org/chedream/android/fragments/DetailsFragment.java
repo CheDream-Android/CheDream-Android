@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -138,16 +139,20 @@ public class DetailsFragment extends Fragment {
         );
 
         TextView likesNumber = (TextView) view.findViewById(R.id.txt_likes_number);
-        likesNumber.setText(mDream.getUsersWhoFavorites().size()); //get number of likes, when API will be available to give it
-
+        if(mDream.getUsersWhoFavorites() != null) {
+            String likes = String.valueOf(mDream.getUsersWhoFavorites().size());
+            likesNumber.setText(likes);
+        } else {
+            likesNumber.setText("0");
+        }
         TextView userName = (TextView) view.findViewById(R.id.txt_user_name);
-        userName.setText(mDream.getAuthor().getUsername()); //only test try for now. It will get name from User-class
+        userName.setText(mDream.getAuthor().getFirstName() + " " + mDream.getAuthor().getLastName());
 
         TextView dreamTitle = (TextView) view.findViewById(R.id.dream_title_textview);
         dreamTitle.setText(mDream.getTitle());
 
         TextView dreamDescription = (TextView) view.findViewById(R.id.dream_description_textview);
-        dreamDescription.setText(mDream.getDescription());
+        dreamDescription.setText(Html.fromHtml(mDream.getDescription()));
 
         Button estimateButton = (Button) view.findViewById(R.id.estimate_btn);
 

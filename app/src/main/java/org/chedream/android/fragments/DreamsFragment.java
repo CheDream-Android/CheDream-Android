@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.apache.http.Header;
 import org.chedream.android.R;
+import org.chedream.android.activities.DetailsActivity;
 import org.chedream.android.activities.MainActivity;
 import org.chedream.android.helpers.ChedreamAPIHelper;
 import org.chedream.android.helpers.ChedreamHttpClient;
@@ -153,9 +155,9 @@ public class DreamsFragment extends Fragment {
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
-//                            intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
-//                            startActivity(intent);
+                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                            intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+                            startActivity(intent);
 
                              Log.d("DreamsFragment",
                                      Integer.toString(ChedreamAPIHelper.getCurrentFinContribQuantity(mDreams.getDreams().get(position))));
