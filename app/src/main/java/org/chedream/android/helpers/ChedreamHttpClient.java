@@ -16,6 +16,6 @@ public class ChedreamHttpClient {
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
-        return Const.API_BASE_URL + relativeUrl;
+        return Const.ChedreamAPI.BASE_URL + relativeUrl;
     }
 }

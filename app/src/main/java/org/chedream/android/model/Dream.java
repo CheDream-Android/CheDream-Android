@@ -257,7 +257,6 @@ public class Dream implements Parcelable {
          */
         dest.writeTypedList(this.mediaCompletedPictures);
         dest.writeTypedList(this.mediaPictures);
-        dest.writeTypedList(this.usersWhoFavorites);
         dest.writeTypedList(this.dreamFinancialResources);
         dest.writeTypedList(this.dreamEquipmentResources);
         dest.writeTypedList(this.dreamWorkResources);

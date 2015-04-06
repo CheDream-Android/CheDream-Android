@@ -72,7 +72,6 @@ public class EquipmentContribution  implements Parcelable {
         this.equipmentResource = equipmentResource;
     }
 
-
     protected EquipmentContribution(Parcel in) {
         createdAt = in.readString();
         quantity = in.readInt();

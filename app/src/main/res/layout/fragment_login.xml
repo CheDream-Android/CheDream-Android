@@ -1,27 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="org.chedream.android.fragments.LoginFragment">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerInParent="true">
-        <com.facebook.widget.LoginButton
-            android:id="@+id/fb_login_button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-        <Button
-            android:id="@+id/vk_login_button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Log in with vk"/>
+    <ListView
+        android:id="@+id/social_networks_listvew"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-        </LinearLayout>
-
-
-</RelativeLayout>
+</FrameLayout>
