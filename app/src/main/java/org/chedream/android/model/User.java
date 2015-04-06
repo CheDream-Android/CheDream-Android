@@ -7,9 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import org.chedream.android.database.RealmUser;
 
-import java.security.spec.ECField;
 import java.util.ArrayList;
-import java.util.List;
 
 public class User implements Parcelable {
 
@@ -52,15 +50,18 @@ public class User implements Parcelable {
     private String phone;
 
     private String skype;
+
     /**
      * Current constructor will cast RealmUser to User
      */
-    public User (RealmUser realmUser) {
+    public User(RealmUser realmUser) {
         this.id = realmUser.getId();
         this.username = realmUser.getUsername();
         this.firstName = realmUser.getFirstName();
         this.lastName = realmUser.getLastName();
-        getAvatar().setProviderReference(realmUser.getAvatar());
+        if (getAvatar() != null) {
+            getAvatar().setProviderReference(realmUser.getAvatar());
+        }
     }
 
     public int getId() {

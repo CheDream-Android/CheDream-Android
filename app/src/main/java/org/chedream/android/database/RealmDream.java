@@ -53,6 +53,62 @@ public class RealmDream extends RealmObject {
     @SerializedName("media_poster")
     private RealmPicture mediaPoster;
 
+    private int finResQuantity;
+    private int finContribQuantity;
+
+    private int equipResQuantity;
+    private int equipContribQuantity;
+
+    private int workResQuantity;
+    private int workContribQuantity;
+
+    public int getFinResQuantity() {
+        return finResQuantity;
+    }
+
+    public void setFinResQuantity(int finResQuantity) {
+        this.finResQuantity = finResQuantity;
+    }
+
+    public int getFinContribQuantity() {
+        return finContribQuantity;
+    }
+
+    public void setFinContribQuantity(int finContribQuantity) {
+        this.finContribQuantity = finContribQuantity;
+    }
+
+    public int getEquipResQuantity() {
+        return equipResQuantity;
+    }
+
+    public void setEquipResQuantity(int equipResQuantity) {
+        this.equipResQuantity = equipResQuantity;
+    }
+
+    public int getEquipContribQuantity() {
+        return equipContribQuantity;
+    }
+
+    public void setEquipContribQuantity(int equipContribQuantity) {
+        this.equipContribQuantity = equipContribQuantity;
+    }
+
+    public int getWorkResQuantity() {
+        return workResQuantity;
+    }
+
+    public void setWorkResQuantity(int workResQuantity) {
+        this.workResQuantity = workResQuantity;
+    }
+
+    public int getWorkContribQuantity() {
+        return workContribQuantity;
+    }
+
+    public void setWorkContribQuantity(int workContribQuantity) {
+        this.workContribQuantity = workContribQuantity;
+    }
 
     public int getId() {
         return id;

@@ -38,6 +38,7 @@ public class DetailsFragment extends Fragment {
     private ActionBarActivity mActivity;
     private Realm mRealm;
     private Dream mDream;
+    private RealmHelper mRealmHelper = new RealmHelper();
 
     public static DetailsFragment getInstance(Dream dream) {
         DetailsFragment fragment = new DetailsFragment();
@@ -74,11 +75,23 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (mRealmHelper.isDreamInDatabase(mRealm, mDream)) {
+            menu.findItem(R.id.action_add_to_favorite).setIcon(R.drawable.ic_action_important);
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_to_favorite:
-                RealmHelper realmHelper = new RealmHelper();
-                realmHelper.addDreamToDatabase(mRealm, mDream);
+                if (mRealmHelper.isDreamInDatabase(mRealm, mDream)) {
+                    mRealmHelper.deleteDreamFromDatabase(mRealm, mDream, mActivity);
+                    item.setIcon(R.drawable.ic_action_not_important);
+                } else {
+                    mRealmHelper.addDreamToDatabase(mRealm, mDream, mActivity);
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -110,7 +123,7 @@ public class DetailsFragment extends Fragment {
 
         mDream = getArguments().getParcelable(ARG_SECTION_NUMBER);
         ActionBar actionBar = mActivity.getSupportActionBar();
-//        actionBar.setTitle(mDream.getTitle());
+        actionBar.setTitle(mDream.getTitle());
 
         ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -139,7 +152,7 @@ public class DetailsFragment extends Fragment {
         );
 
         TextView likesNumber = (TextView) view.findViewById(R.id.txt_likes_number);
-        if(mDream.getUsersWhoFavorites() != null) {
+        if (mDream.getUsersWhoFavorites() != null) {
             String likes = String.valueOf(mDream.getUsersWhoFavorites().size());
             likesNumber.setText(likes);
         } else {

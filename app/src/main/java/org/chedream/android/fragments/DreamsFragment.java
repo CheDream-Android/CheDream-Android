@@ -43,18 +43,23 @@ import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.exceptions.RealmMigrationNeededException;
 
 public class DreamsFragment extends Fragment {
 
     private Dreams mDreams;
+    private List<Dream> mDreamsFromDB;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private ActionBarActivity mActivity;
     private Realm mRealm;
     private RealmHelper mRealmHelper;
     private GridViewAdapter mGridViewAdapter;
+
+    private boolean mIsDataFromDBOnScreen = false;
 
 
     public static DreamsFragment newInstance(int sectionNumber) {
@@ -79,13 +84,15 @@ public class DreamsFragment extends Fragment {
         } catch (RealmMigrationNeededException e) {
             e.printStackTrace();
             Realm.deleteRealmFile(mActivity);
-        };
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mRealm.close();
+        if (mRealm != null) {
+            mRealm.close();
+        }
     }
 
     @Override
@@ -131,11 +138,37 @@ public class DreamsFragment extends Fragment {
 
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
+        mGridViewAdapter = new GridViewAdapter(getActivity());
 
+        //checking, what section is selected
         if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
-//            mRealmHelper = new RealmHelper();
-//            mDreams = mRealmHelper.getAllTestDreams(mRealm);
+            mRealmHelper = new RealmHelper();
+            mDreamsFromDB = mRealmHelper.getDreamsFromDatabase(mRealm);
+            mIsDataFromDBOnScreen = true;
+
+            mGridViewAdapter.notifyDataSetChanged();
+            gridView.setAdapter(mGridViewAdapter);
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                    intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreamsFromDB.get(position));
+                    startActivity(intent);
+                }
+            });
+
+
+            options = new DisplayImageOptions.Builder()
+                    .cacheOnDisk(true)
+                    .cacheInMemory(true)
+                    .considerExifParams(true)
+                    .build();
+
+            imageLoader = ImageLoader.getInstance();
+            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
+
         } else {
+            mIsDataFromDBOnScreen = false;
             ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_DREAMS, null, new JsonHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -150,7 +183,7 @@ public class DreamsFragment extends Fragment {
 
                     Gson gson = new Gson();
                     mDreams = gson.fromJson(response.toString(), Dreams.class);
-                    mGridViewAdapter = new GridViewAdapter(getActivity());
+//                    mGridViewAdapter = new GridViewAdapter(getActivity());
                     gridView.setAdapter(mGridViewAdapter);
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -159,8 +192,8 @@ public class DreamsFragment extends Fragment {
                             intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
                             startActivity(intent);
 
-                             Log.d("DreamsFragment",
-                                     Integer.toString(ChedreamAPIHelper.getCurrentFinContribQuantity(mDreams.getDreams().get(position))));
+                            Log.d("DreamsFragment",
+                                    Integer.toString(ChedreamAPIHelper.getCurrentFinContribQuantity(mDreams.getDreams().get(position))));
 
 
                         }
@@ -175,7 +208,6 @@ public class DreamsFragment extends Fragment {
 
                     imageLoader = ImageLoader.getInstance();
                     imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
-
                 }
 
                 @Override
@@ -221,12 +253,20 @@ public class DreamsFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return mDreams.getDreams().size();
+            if (!mIsDataFromDBOnScreen) {
+                return mDreams.getDreams().size();
+            } else {
+                return mDreamsFromDB.size();
+            }
         }
 
         @Override
         public Object getItem(int position) {
-            return mDreams.getDreams().get(position);
+            if (!mIsDataFromDBOnScreen) {
+                return mDreams.getDreams().get(position);
+            } else {
+                return mDreamsFromDB.get(position);
+            }
         }
 
         public Dream getDream(int position) {
@@ -265,42 +305,77 @@ public class DreamsFragment extends Fragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            Dream dream = getDream(position);
+            if (!mIsDataFromDBOnScreen) {
+                Dream dream = getDream(position);
 
-            imageLoader.displayImage(
-                    Const.ChedreamAPI.BASE_POSTER_URL + dream.getMediaPoster().getProviderReference(),
-                    viewHolder.mImageViewMain,
-                    options);
+                imageLoader.displayImage(
+                        Const.ChedreamAPI.BASE_POSTER_URL + dream.getMediaPoster().getProviderReference(),
+                        viewHolder.mImageViewMain,
+                        options);
 
-            viewHolder.mTitle.setText(dream.getTitle());
+                viewHolder.mTitle.setText(dream.getTitle());
 
-            viewHolder.mCountLikes.setText(Integer.toString(1));
+                viewHolder.mCountLikes.setText(Integer.toString(1));
 
-            viewHolder.mBarMoney.setProgress(ChedreamAPIHelper.getCurrentFinContribQuantity(dream));
-            viewHolder.mBarPeople.setProgress(ChedreamAPIHelper.getCurrentWorkContribQuantity(dream));
-            viewHolder.mBarTools.setProgress(ChedreamAPIHelper.getCurrentEquipContribQuantity(dream));
+                viewHolder.mBarMoney.setProgress(ChedreamAPIHelper.getCurrentFinContribQuantity(dream));
+                viewHolder.mBarPeople.setProgress(ChedreamAPIHelper.getCurrentWorkContribQuantity(dream));
+                viewHolder.mBarTools.setProgress(ChedreamAPIHelper.getCurrentEquipContribQuantity(dream));
 
-            int visibility = ChedreamAPIHelper.getOverallFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
-            viewHolder.mContainerMoney.setVisibility(visibility);
+                int visibility = ChedreamAPIHelper.getOverallFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
+                viewHolder.mContainerMoney.setVisibility(visibility);
 
-            visibility = ChedreamAPIHelper.getOverallWorkResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
-            viewHolder.mContainerPeople.setVisibility(visibility);
+                visibility = ChedreamAPIHelper.getOverallWorkResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
+                viewHolder.mContainerPeople.setVisibility(visibility);
 
-            visibility = ChedreamAPIHelper.getOverallEquipResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
-            viewHolder.mContainerTools.setVisibility(visibility);
+                visibility = ChedreamAPIHelper.getOverallEquipResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
+                viewHolder.mContainerTools.setVisibility(visibility);
 
-            final int ORANGE = 0xFF9933;
+                final int ORANGE = 0xFF9933;
 
-            PorterDuff.Mode mode = viewHolder.mBarMoney.
-                    getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-            viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
-            mode = viewHolder.mBarPeople.
-                    getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-            viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
-            mode = viewHolder.mBarTools.
-                    getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-            viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
+                PorterDuff.Mode mode = viewHolder.mBarMoney.
+                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+                viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
+                mode = viewHolder.mBarPeople.
+                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+                viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
+                mode = viewHolder.mBarTools.
+                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+                viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
+            } else {
+                imageLoader.displayImage(
+                        Const.ChedreamAPI.BASE_POSTER_URL + mDreamsFromDB.get(position).getMediaPoster().getProviderReference(),
+                        viewHolder.mImageViewMain,
+                        options);
 
+                viewHolder.mTitle.setText(mDreamsFromDB.get(position).getTitle());
+
+                viewHolder.mCountLikes.setText(String.valueOf(mDreamsFromDB.get(position).getUsersWhoFavorites().size()));
+
+                viewHolder.mBarMoney.setProgress(mRealmHelper.getFinContQuantity(mRealm, position));
+                viewHolder.mBarPeople.setProgress(mRealmHelper.getWorkContQuantity(mRealm, position));
+                viewHolder.mBarTools.setProgress(mRealmHelper.getEquipContQuantity(mRealm, position));
+
+                int visibility = mRealmHelper.getFinResQuantity(mRealm, position) != 0 ? View.VISIBLE : View.GONE;
+                viewHolder.mContainerMoney.setVisibility(visibility);
+
+                visibility = mRealmHelper.getWorkResQuantity(mRealm, position) != 0 ? View.VISIBLE : View.GONE;
+                viewHolder.mContainerPeople.setVisibility(visibility);
+
+                visibility = mRealmHelper.getEquipResQuantity(mRealm, position) != 0 ? View.VISIBLE : View.GONE;
+                viewHolder.mContainerTools.setVisibility(visibility);
+
+                final int ORANGE = 0xFF9933;
+
+                PorterDuff.Mode mode = viewHolder.mBarMoney.
+                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+                viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
+                mode = viewHolder.mBarPeople.
+                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+                viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
+                mode = viewHolder.mBarTools.
+                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+                viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
+            }
             return convertView;
         }
     }
