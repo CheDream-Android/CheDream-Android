@@ -1,10 +1,8 @@
 package org.chedream.android.fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,6 +33,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
@@ -47,7 +46,6 @@ import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUserFull;
 import com.vk.sdk.api.model.VKList;
-import com.vk.sdk.api.model.VKUsersArray;
 import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
@@ -73,7 +71,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
     private ProgressDialog mConnectionProgressDialog;
     private GoogleApiClient mGoogleApiClient;
-    private ConnectionResult mConnectionResult;
 
     public LoginFragment() {
 
@@ -84,6 +81,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         super.onCreate(savedInstanceState);
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
@@ -110,11 +108,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                         LoginManager.getInstance().registerCallback(
                                 ProfileActivity.sCallbackManager,
                                 new FacebookCallback<LoginResult>() {
-
                                     @Override
                                     public void onSuccess(LoginResult loginResult) {
-                                        setLoginStatus(true, Const.SocialNetworks.FB_ID);
-
                                         GraphRequestAsyncTask request = GraphRequest.newMeRequest(
                                                 AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
 
@@ -127,7 +122,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                                                         }
                                                     }
                                                 }).executeAsync();
-                                        Log.d(LOG_TAG, "fb: login success");
+
+                                        setLoginStatus(true, Const.SocialNetworks.FB_ID);
                                     }
 
                                     @Override
@@ -166,12 +162,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.i(LOG_TAG, "Result code: " + Integer.toString(resultCode));
-    }
-
     private VKSdkListener sdkListener = new VKSdkListener() {
         @Override
         public void onCaptchaError(VKError captchaError) {
@@ -195,10 +185,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         public void onReceiveNewToken(VKAccessToken newToken) {
             super.onReceiveNewToken(newToken);
             newToken.saveTokenToSharedPreferences(getActivity(), "VK_ACCESS_TOKEN");
-            setLoginStatus(true, Const.SocialNetworks.VK_ID);
-            VKRequest request = VKApi.users().get(VKParameters.from(
-                    VKApiConst.FIELDS,
-                    "photo_200"));
+
+            VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "photo_200"));
             request.executeWithListener(new VKRequest.VKRequestListener() {
                 @Override
                 public void onComplete(VKResponse response) {
@@ -212,6 +200,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                     );
                 }
             });
+
+            setLoginStatus(true, Const.SocialNetworks.VK_ID);
             Log.d(LOG_TAG, "New User Token received");
         }
 
@@ -228,7 +218,13 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
         setLoginStatus(true, Const.SocialNetworks.GPLUS_ID);
-        Log.d(LOG_TAG, "G+ connected");
+        Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+        String avatarUrl = person.getImage().getUrl();
+        StringBuilder builder = new StringBuilder(avatarUrl)
+                .delete(avatarUrl.length()-2, avatarUrl.length())
+                .append("200");
+        saveUserData(person.getDisplayName(), builder.toString());
+        Log.d(LOG_TAG, "connected");
     }
 
     @Override
@@ -247,7 +243,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 }
             }
         }
-        mConnectionResult = connectionResult;
     }
 
     private void setLoginStatus(boolean isLogged, int socialNetworkId) {
