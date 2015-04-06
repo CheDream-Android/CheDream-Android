@@ -39,7 +39,15 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKSdkListener;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiUserFull;
+import com.vk.sdk.api.model.VKList;
+import com.vk.sdk.api.model.VKUsersArray;
 import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
@@ -159,41 +167,9 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-//        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-//        mGoogleApiClient.disconnect();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(LOG_TAG, "Result code: " + Integer.toString(resultCode));
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    private void setLoginStatus(boolean isLogged, int socialNetworkId) {
-        SharedPreferences sp = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
-                .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
-    }
-
-    private void saveUserData(String username, String avatarUrl) {
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(getActivity()).edit();
-        editor.putString(Const.SP_USER_NAME, username);
-        editor.putString(Const.SP_USER_PICTURE_URL, avatarUrl);
-        editor.apply();
     }
 
     private VKSdkListener sdkListener = new VKSdkListener() {
@@ -220,6 +196,22 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
             super.onReceiveNewToken(newToken);
             newToken.saveTokenToSharedPreferences(getActivity(), "VK_ACCESS_TOKEN");
             setLoginStatus(true, Const.SocialNetworks.VK_ID);
+            VKRequest request = VKApi.users().get(VKParameters.from(
+                    VKApiConst.FIELDS,
+                    "photo_200"));
+            request.executeWithListener(new VKRequest.VKRequestListener() {
+                @Override
+                public void onComplete(VKResponse response) {
+                    super.onComplete(response);
+
+                    VKList<VKApiUserFull> vkList = (VKList<VKApiUserFull>) response.parsedModel;
+                    VKApiUserFull user = vkList.get(0);
+                    saveUserData(
+                            user.first_name + " " + user.last_name,
+                            user.photo_200
+                    );
+                }
+            });
             Log.d(LOG_TAG, "New User Token received");
         }
 
@@ -256,6 +248,21 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
             }
         }
         mConnectionResult = connectionResult;
+    }
+
+    private void setLoginStatus(boolean isLogged, int socialNetworkId) {
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
+                .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
+    }
+
+    private void saveUserData(String username, String avatarUrl) {
+        SharedPreferences.Editor editor = PreferenceManager
+                .getDefaultSharedPreferences(getActivity()).edit();
+        editor.putString(Const.SP_USER_NAME, username);
+        editor.putString(Const.SP_USER_PICTURE_URL, avatarUrl);
+        editor.apply();
     }
 
     private void initSocNetworks() {
