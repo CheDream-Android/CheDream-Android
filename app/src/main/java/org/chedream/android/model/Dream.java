@@ -250,12 +250,12 @@ public class Dream implements Parcelable {
         dest.writeString(this.deletedAt);
         dest.writeParcelable(this.author, flags);
         dest.writeString(this.currentStatus);
-        dest.writeList(this.mediaCompletedPictures);
         dest.writeParcelable(this.mediaPoster, flags);
         /**
          * To aviod "Parcelable encountered IOException writing serializable object (name = java.util.ArrayList)"
-         * I've replaced 'writeSerializeble' with 'writeList'
+         * I've replaced 'writeSerializeble' with 'writeTypedArrayList'
          */
+        dest.writeTypedList(this.mediaCompletedPictures);
         dest.writeTypedList(this.mediaPictures);
         dest.writeTypedList(this.usersWhoFavorites);
         dest.writeTypedList(this.dreamFinancialResources);
@@ -279,23 +279,22 @@ public class Dream implements Parcelable {
         this.createdAt = in.readString();
         this.updatedAt = in.readString();
         this.deletedAt = in.readString();
-        in.
-                readTypedList(
-                        usersWhoFavorites,
-                        User
-                                .CREATOR);
         this.author = in.readParcelable(User.class.getClassLoader());
-        this.currentStatus = in.readString();
-        in.readTypedList(mediaPictures, Picture.CREATOR);
-        in.readTypedList(mediaCompletedPictures, Picture.CREATOR);
+        //line below showed 'Unable to cast from Picture to User', but I did some magic, and now the exception is:
+        //Caused by: android.os.BadParcelableException: ClassNotFoundException when unmarshalling: submitted
         this.mediaPoster = in.readParcelable(Picture.class.getClassLoader());
-        in.readTypedList(dreamFinancialResources, FinancialResource.CREATOR);
-        in.readTypedList(dreamEquipmentResources, EquipmentResource.CREATOR);
-        in.readTypedList(dreamWorkResources, WorkResource.CREATOR);
-        in.readTypedList(dreamFinancialContributions, FinancialContribution.CREATOR);
-        in.readTypedList(dreamEquipmentContributions, EquipmentContribution.CREATOR);
-        in.readTypedList(dreamWorkContributions, WorkContribution.CREATOR);
-        in.readTypedList(dreamOtherContributions, OtherContribution.CREATOR);
+        this.currentStatus = in.readString();
+
+        usersWhoFavorites = in.createTypedArrayList(User.CREATOR);
+        mediaPictures = in.createTypedArrayList(Picture.CREATOR);
+        mediaCompletedPictures = in.createTypedArrayList(Picture.CREATOR);
+        dreamFinancialResources = in.createTypedArrayList(FinancialResource.CREATOR);
+        dreamEquipmentResources = in.createTypedArrayList(EquipmentResource.CREATOR);
+        dreamWorkResources = in.createTypedArrayList(WorkResource.CREATOR);
+        dreamFinancialContributions = in.createTypedArrayList(FinancialContribution.CREATOR);
+        dreamEquipmentContributions = in.createTypedArrayList(EquipmentContribution.CREATOR);
+        dreamWorkContributions = in.createTypedArrayList(WorkContribution.CREATOR);
+        dreamOtherContributions = in.createTypedArrayList(OtherContribution.CREATOR);
     }
 
     public static final Parcelable.Creator<Dream> CREATOR = new Parcelable.Creator<Dream>() {

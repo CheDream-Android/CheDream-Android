@@ -204,18 +204,17 @@ public class User implements Parcelable {
         dest.writeString(this.lastName);
         dest.writeString(this.birthday);
         dest.writeString(this.about);
-        dest.writeParcelable(this.avatar, 0);
+        dest.writeParcelable(this.avatar, flags);
         dest.writeString(this.vkontakteId);
         dest.writeString(this.facebookId);
-
-        dest.writeList(this.financialContributions);
-        dest.writeList(this.equipmentContributions);
-        dest.writeList(this.workContributions);
-        dest.writeList(this.otherContributions);
-        dest.writeList(this.dreams);
-
         dest.writeString(this.phone);
         dest.writeString(this.skype);
+
+        dest.writeTypedList(this.financialContributions);
+        dest.writeTypedList(this.equipmentContributions);
+        dest.writeTypedList(this.workContributions);
+        dest.writeTypedList(this.otherContributions);
+        dest.writeTypedList(this.dreams);
     }
 
     public User() {
@@ -231,13 +230,14 @@ public class User implements Parcelable {
         this.avatar = in.readParcelable(Picture.class.getClassLoader());
         this.vkontakteId = in.readString();
         this.facebookId = in.readString();
-        in.readTypedList(financialContributions,FinancialContribution.CREATOR);
-        in.readTypedList(equipmentContributions,EquipmentContribution.CREATOR);
-        in.readTypedList(workContributions,WorkContribution.CREATOR);
-        in.readTypedList(otherContributions,OtherContribution.CREATOR);
-        in.readTypedList(dreams,Dream.CREATOR);
         this.phone = in.readString();
         this.skype = in.readString();
+
+        financialContributions = in.createTypedArrayList(FinancialContribution.CREATOR);
+        equipmentContributions = in.createTypedArrayList(EquipmentContribution.CREATOR);
+        workContributions = in.createTypedArrayList(WorkContribution.CREATOR);
+        otherContributions = in.createTypedArrayList(OtherContribution.CREATOR);
+        dreams = in.createTypedArrayList(Dream.CREATOR);
     }
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {

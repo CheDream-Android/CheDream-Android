@@ -40,17 +40,10 @@ import org.chedream.android.helpers.Const;
 import org.chedream.android.helpers.RealmHelper;
 import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
-import org.chedream.android.helpers.RealmHelper;
-import org.chedream.android.helpers.ChedreamAPIHelper;
-import org.chedream.android.helpers.ChedreamHttpClient;
-import org.chedream.android.helpers.Const;
-import org.chedream.android.model.Dream;
-import org.chedream.android.model.Dreams;
 import org.json.JSONObject;
 
-import java.util.List;
-
 import io.realm.Realm;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 public class DreamsFragment extends Fragment {
 
@@ -80,7 +73,12 @@ public class DreamsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mActivity = (ActionBarActivity) getActivity();
-        mRealm = Realm.getInstance(mActivity);
+        try {
+            mRealm = Realm.getInstance(mActivity);
+        } catch (RealmMigrationNeededException e) {
+            e.printStackTrace();
+            Realm.deleteRealmFile(mActivity);
+        }
     }
 
     @Override

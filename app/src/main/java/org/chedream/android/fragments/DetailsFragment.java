@@ -107,7 +107,7 @@ public class DetailsFragment extends Fragment {
                     }
                 });
 
-        mDream = (Dream) getArguments().getParcelable(ARG_SECTION_NUMBER);
+        mDream = getArguments().getParcelable(ARG_SECTION_NUMBER);
         ActionBar actionBar = mActivity.getSupportActionBar();
 //        actionBar.setTitle(mDream.getTitle());
 
