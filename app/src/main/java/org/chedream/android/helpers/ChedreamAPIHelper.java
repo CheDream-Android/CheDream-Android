@@ -1,5 +1,6 @@
 package org.chedream.android.helpers;
 
+import org.chedream.android.database.RealmDream;
 import org.chedream.android.model.Dream;
 import org.chedream.android.model.EquipmentContribution;
 import org.chedream.android.model.EquipmentResource;

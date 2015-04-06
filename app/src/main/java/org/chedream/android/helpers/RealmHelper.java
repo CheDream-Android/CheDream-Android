@@ -2,20 +2,25 @@ package org.chedream.android.helpers;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.chedream.android.database.RealmDream;
 import org.chedream.android.database.RealmPicture;
 import org.chedream.android.database.RealmUser;
 import org.chedream.android.model.Dream;
+import org.chedream.android.model.EquipmentContribution;
+import org.chedream.android.model.EquipmentResource;
+import org.chedream.android.model.FinancialContribution;
+import org.chedream.android.model.FinancialResource;
 import org.chedream.android.model.Picture;
 import org.chedream.android.model.User;
+import org.chedream.android.model.WorkResource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 
 /**
  * Created by Dante Allteran on 3/16/2015.
@@ -26,7 +31,7 @@ public class RealmHelper {
     /**
      * In DB user wont see any contribution or resources
      */
-    public void addDreamToDatabase(Realm realm, Dream currentDream) {
+    public void addDreamToDatabase(Realm realm, Dream currentDream, Context activity) {
         /**Prepare to cast field 'author' from Dream to  RealmDream*/
         RealmUser currentAuthor = new RealmUser(currentDream.getAuthor());
 
@@ -75,6 +80,37 @@ public class RealmHelper {
             usersWhoFavorite.add(rUser);
         }
 
+        /**Third - add all quantities to DB*/
+        int finResQuantity = 0;
+        for (FinancialResource resource : currentDream.getDreamFinancialResources()) {
+            finResQuantity += resource.getQuantity();
+        }
+
+        int finContQuantity = 0;
+        for (FinancialContribution contribution : currentDream.getDreamFinancialContributions()) {
+            finContQuantity += contribution.getQuantity();
+        }
+
+        int workResQuantity = 0;
+        for (WorkResource resource : currentDream.getDreamWorkResources()) {
+            workResQuantity += resource.getQuantity();
+        }
+
+        int workContQuantity = 0;
+        for (FinancialContribution contribution : currentDream.getDreamFinancialContributions()) {
+            workContQuantity += contribution.getQuantity();
+        }
+
+        int equipResQuantity = 0;
+        for (EquipmentResource resource : currentDream.getDreamEquipmentResources()) {
+            equipResQuantity += resource.getQuantity();
+        }
+
+        int equipContQuantity = 0;
+        for (EquipmentContribution contribution : currentDream.getDreamEquipmentContributions()) {
+            equipContQuantity += contribution.getQuantity();
+        }
+
         /**And add current dream to DB*/
         RealmDream dream = realm.createObject(RealmDream.class);
         dream.setId(realmDream.getId());
@@ -85,11 +121,18 @@ public class RealmHelper {
         dream.setCreatedAt(realmDream.getCreatedAt());
         dream.setUpdatedAt(realmDream.getUpdatedAt());
         dream.setUsersWhoFavorites(usersWhoFavorite);
-        dream.setAuthor(currentAuthor);
+        dream.setAuthor(author);
         dream.setCurrentStatus(realmDream.getCurrentStatus());
+        dream.setFinResQuantity(finResQuantity);
+        dream.setFinContribQuantity(finContQuantity);
+        dream.setEquipResQuantity(equipResQuantity);
+        dream.setEquipContribQuantity(equipContQuantity);
+        dream.setWorkResQuantity(workResQuantity);
+        dream.setWorkContribQuantity(workContQuantity);
         Log.i(TAG, "Dream \"" + dream.getTitle() + "\" was added to realm database");
 
         realm.commitTransaction();
+        Toast.makeText(activity, "Dream was added to DB", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -149,7 +192,7 @@ public class RealmHelper {
         return nativeDream;
     }
 
-    public boolean isDrealmInDatabase(Realm realm, Dream incomingDream) {
+    public boolean isDreamInDatabase(Realm realm, Dream incomingDream) {
         List<RealmDream> result = realm.where(RealmDream.class)
                 .equalTo("id", incomingDream.getId())
                 .findAll();
@@ -160,4 +203,65 @@ public class RealmHelper {
         realm.close();
         Realm.deleteRealmFile(context);
     }
+
+    public void deleteDreamFromDatabase(Realm realm, Dream incomingDream, Context activity) {
+        realm.beginTransaction();
+        List<RealmDream> result = realm
+                .where(RealmDream.class)
+                .equalTo("id", incomingDream.getId())
+                .findAll();
+        result.remove(0);
+        realm.commitTransaction();
+        Toast.makeText(activity, "Dream was deleted from DB", Toast.LENGTH_SHORT).show();
+    }
+
+    public int getFinResQuantity(Realm realm, int position) {
+        List<RealmDream> dreamsFromDb = realm
+                .where(RealmDream.class)
+                .findAll();
+
+        return dreamsFromDb.get(position).getFinResQuantity();
+    }
+
+    public int getFinContQuantity(Realm realm, int position) {
+        List<RealmDream> dreamsFromDb = realm
+                .where(RealmDream.class)
+                .findAll();
+
+        return dreamsFromDb.get(position).getFinContribQuantity();
+    }
+
+    public int getEquipResQuantity(Realm realm, int position) {
+        List<RealmDream> dreamsFromDb = realm
+                .where(RealmDream.class)
+                .findAll();
+
+        return dreamsFromDb.get(position).getEquipResQuantity();
+    }
+
+    public int getEquipContQuantity(Realm realm, int position) {
+        List<RealmDream> dreamsFromDb = realm
+                .where(RealmDream.class)
+                .findAll();
+
+        return dreamsFromDb.get(position).getEquipContribQuantity();
+    }
+
+    public int getWorkResQuantity(Realm realm, int position) {
+        List<RealmDream> dreamsFromDb = realm
+                .where(RealmDream.class)
+                .findAll();
+
+        return dreamsFromDb.get(position).getWorkResQuantity();
+    }
+
+    public int getWorkContQuantity(Realm realm, int position) {
+        List<RealmDream> dreamsFromDb = realm
+                .where(RealmDream.class)
+                .findAll();
+
+        return dreamsFromDb.get(position).getWorkContribQuantity();
+    }
+
+
 }

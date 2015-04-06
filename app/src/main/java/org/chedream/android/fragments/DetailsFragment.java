@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +38,7 @@ public class DetailsFragment extends Fragment {
     private ActionBarActivity mActivity;
     private Realm mRealm;
     private Dream mDream;
+    private RealmHelper mRealmHelper = new RealmHelper();
 
     public static DetailsFragment getInstance(Dream dream) {
         DetailsFragment fragment = new DetailsFragment();
@@ -73,11 +75,23 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (mRealmHelper.isDreamInDatabase(mRealm, mDream)) {
+            menu.findItem(R.id.action_add_to_favorite).setIcon(R.drawable.ic_action_important);
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_to_favorite:
-                RealmHelper realmHelper = new RealmHelper();
-                realmHelper.addDreamToDatabase(mRealm, mDream);
+                if (mRealmHelper.isDreamInDatabase(mRealm, mDream)) {
+                    mRealmHelper.deleteDreamFromDatabase(mRealm, mDream, mActivity);
+                    item.setIcon(R.drawable.ic_action_not_important);
+                } else {
+                    mRealmHelper.addDreamToDatabase(mRealm, mDream, mActivity);
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -107,9 +121,9 @@ public class DetailsFragment extends Fragment {
                     }
                 });
 
-        mDream = (Dream) getArguments().getParcelable(ARG_SECTION_NUMBER);
+        mDream = getArguments().getParcelable(ARG_SECTION_NUMBER);
         ActionBar actionBar = mActivity.getSupportActionBar();
-//        actionBar.setTitle(mDream.getTitle());
+        actionBar.setTitle(mDream.getTitle());
 
         ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -138,16 +152,20 @@ public class DetailsFragment extends Fragment {
         );
 
         TextView likesNumber = (TextView) view.findViewById(R.id.txt_likes_number);
-        likesNumber.setText(mDream.getUsersWhoFavorites().size()); //get number of likes, when API will be available to give it
-
+        if (mDream.getUsersWhoFavorites() != null) {
+            String likes = String.valueOf(mDream.getUsersWhoFavorites().size());
+            likesNumber.setText(likes);
+        } else {
+            likesNumber.setText("0");
+        }
         TextView userName = (TextView) view.findViewById(R.id.txt_user_name);
-        userName.setText(mDream.getAuthor().getUsername()); //only test try for now. It will get name from User-class
+        userName.setText(mDream.getAuthor().getFirstName() + " " + mDream.getAuthor().getLastName());
 
         TextView dreamTitle = (TextView) view.findViewById(R.id.dream_title_textview);
         dreamTitle.setText(mDream.getTitle());
 
         TextView dreamDescription = (TextView) view.findViewById(R.id.dream_description_textview);
-        dreamDescription.setText(mDream.getDescription());
+        dreamDescription.setText(Html.fromHtml(mDream.getDescription()));
 
         Button estimateButton = (Button) view.findViewById(R.id.estimate_btn);
 
