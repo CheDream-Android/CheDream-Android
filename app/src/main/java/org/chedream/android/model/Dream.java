@@ -252,8 +252,9 @@ public class Dream implements Parcelable {
         dest.writeString(this.currentStatus);
         dest.writeParcelable(this.mediaPoster, flags);
         /**
-         * To aviod "Parcelable encountered IOException writing serializable object (name = java.util.ArrayList)"
+         * To avoid "Parcelable encountered IOException writing serializable object (name = java.util.ArrayList)"
          * I've replaced 'writeSerializeble' with 'writeTypedArrayList'
+         * Editing this part of code, make sure that order in 'writeToParcel' and 'Dream(Parcel in)' are the same - it's important
          */
         dest.writeTypedList(this.usersWhoFavorites);
         dest.writeTypedList(this.mediaCompletedPictures);

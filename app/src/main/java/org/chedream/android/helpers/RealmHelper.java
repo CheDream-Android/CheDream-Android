@@ -80,7 +80,37 @@ public class RealmHelper {
             usersWhoFavorite.add(rUser);
         }
 
-        /**Third - add all quantities to DB*/
+        /**Third - add all pictures to database (mediaPoster, mediaCompletedPictures, mediaPictures)*/
+        RealmPicture mediaPoster = realm.createObject(RealmPicture.class);
+        mediaPoster.setId(realmMediaPoster.getId());
+        mediaPoster.setProviderReference(realmMediaPoster.getProviderReference());
+        mediaPoster.setHeight(realmMediaPoster.getHeight());
+        mediaPoster.setName(realmMediaPoster.getName());
+        mediaPoster.setWidth(realmMediaPoster.getWidth());
+
+        RealmList<RealmPicture> mediaPictures = new RealmList<>();
+        for (int i = 0; i < realmMediaPictures.size(); i++) {
+            RealmPicture picture = realm.createObject(RealmPicture.class);
+            picture.setId(realmMediaPictures.get(i).getId());
+            picture.setName(realmMediaPictures.get(i).getName());
+            picture.setProviderReference(realmMediaPictures.get(i).getProviderReference());
+            picture.setWidth(realmMediaPictures.get(i).getWidth());
+            picture.setHeight(realmMediaPictures.get(i).getHeight());
+            mediaPictures.add(picture);
+        }
+
+        RealmList<RealmPicture> mediaCompletedPictures = new RealmList<>();
+        for (int i = 0; i < realmMediaCompletedPictures.size(); i++) {
+            RealmPicture picture = realm.createObject(RealmPicture.class);
+            picture.setId(mediaCompletedPictures.get(i).getId());
+            picture.setName(mediaCompletedPictures.get(i).getName());
+            picture.setProviderReference(mediaCompletedPictures.get(i).getProviderReference());
+            picture.setWidth(mediaCompletedPictures.get(i).getWidth());
+            picture.setHeight(mediaCompletedPictures.get(i).getHeight());
+            mediaCompletedPictures.add(picture);
+        }
+
+        /**Fourth - add all quantities to DB*/
         int finResQuantity = 0;
         for (FinancialResource resource : currentDream.getDreamFinancialResources()) {
             finResQuantity += resource.getQuantity();
@@ -129,6 +159,10 @@ public class RealmHelper {
         dream.setEquipContribQuantity(equipContQuantity);
         dream.setWorkResQuantity(workResQuantity);
         dream.setWorkContribQuantity(workContQuantity);
+
+        dream.setMediaPoster(mediaPoster);
+        dream.setMediaPictures(mediaPictures);
+        dream.setMediaCompletedPictures(mediaCompletedPictures);
         Log.i(TAG, "Dream \"" + dream.getTitle() + "\" was added to realm database");
 
         realm.commitTransaction();

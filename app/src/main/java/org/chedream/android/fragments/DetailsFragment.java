@@ -91,6 +91,7 @@ public class DetailsFragment extends Fragment {
                     item.setIcon(R.drawable.ic_action_not_important);
                 } else {
                     mRealmHelper.addDreamToDatabase(mRealm, mDream, mActivity);
+                    item.setIcon(R.drawable.ic_action_important);
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -170,8 +171,6 @@ public class DetailsFragment extends Fragment {
         Button estimateButton = (Button) view.findViewById(R.id.estimate_btn);
 
         Button membersButton = (Button) view.findViewById(R.id.members_btn);
-
-        Button financialSupportButton = (Button) view.findViewById(R.id.financial_support_btn);
     }
 
 

@@ -244,6 +244,7 @@ public class DreamsFragment extends Fragment {
 
     private class GridViewAdapter extends BaseAdapter {
 
+        private final String TAG = GridViewAdapter.class.getSimpleName();
         private LayoutInflater mLayoutInflater;
 
         public GridViewAdapter(Context context) {
@@ -315,11 +316,16 @@ public class DreamsFragment extends Fragment {
 
                 viewHolder.mTitle.setText(dream.getTitle());
 
-                viewHolder.mCountLikes.setText(Integer.toString(1));
+                viewHolder.mCountLikes.setText(String.valueOf(dream.getUsersWhoFavorites().size()));
 
                 viewHolder.mBarMoney.setProgress(ChedreamAPIHelper.getCurrentFinContribQuantity(dream));
+                Log.i(TAG, "mBar money = " + viewHolder.mBarMoney.getProgress());
+
                 viewHolder.mBarPeople.setProgress(ChedreamAPIHelper.getCurrentWorkContribQuantity(dream));
+                Log.i(TAG, "mBar people = " + viewHolder.mBarPeople.getProgress());
+
                 viewHolder.mBarTools.setProgress(ChedreamAPIHelper.getCurrentEquipContribQuantity(dream));
+                Log.i(TAG, "mBar tools = " + viewHolder.mBarTools.getProgress());
 
                 int visibility = ChedreamAPIHelper.getOverallFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
                 viewHolder.mContainerMoney.setVisibility(visibility);
@@ -337,11 +343,14 @@ public class DreamsFragment extends Fragment {
                 viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
                 mode = viewHolder.mBarPeople.
                         getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+
                 viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
                 mode = viewHolder.mBarTools.
                         getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+
                 viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
             } else {
+                //to get shown dreams while is no internet connection, need to save images into cache or on external card
                 imageLoader.displayImage(
                         Const.ChedreamAPI.BASE_POSTER_URL + mDreamsFromDB.get(position).getMediaPoster().getProviderReference(),
                         viewHolder.mImageViewMain,
