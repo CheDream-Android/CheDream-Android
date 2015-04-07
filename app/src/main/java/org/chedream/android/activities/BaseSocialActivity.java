@@ -1,16 +1,21 @@
 package org.chedream.android.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 
 import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.VKUIHelper;
 
 import org.chedream.android.R;
@@ -29,6 +34,7 @@ public abstract class BaseSocialActivity extends ActionBarActivity {
         VKUIHelper.onCreate(this);
 
         mFbCallbackManager = CallbackManager.Factory.create();
+
     }
 
     @Override
@@ -53,8 +59,19 @@ public abstract class BaseSocialActivity extends ActionBarActivity {
         VKUIHelper.onDestroy(this);
     }
 
+    public CallbackManager getFbCallbackManager() {
+        return mFbCallbackManager;
+    }
+
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
+    }
+
+    public void initVKSdk(VKSdkListener sdkListener) {
+        VKSdk.initialize(
+                sdkListener,
+                getResources().getString(R.string.vkontakte_app_id),
+                VKAccessToken.tokenFromSharedPreferences(this, "VK_ACCESS_TOKEN"));
     }
 
     public void initGoogleApiClient(ConnectionCallbacks callbacks, OnConnectionFailedListener listener) {
@@ -64,9 +81,5 @@ public abstract class BaseSocialActivity extends ActionBarActivity {
                 .addConnectionCallbacks(callbacks)
                 .addOnConnectionFailedListener(listener)
                 .build();
-    }
-
-    public CallbackManager getFbCallbackManager() {
-        return mFbCallbackManager;
     }
 }

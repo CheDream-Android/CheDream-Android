@@ -71,8 +71,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     private ArrayList<SocialNetwork> mSocialNetworks;
 
     private ProgressDialog mConnectionProgressDialog;
-    ConnectionResult mConnectionResult;
-    //private GoogleApiClient mGoogleApiClient;
 
     public LoginFragment() {
 
@@ -141,10 +139,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                         );
                         break;
                     case Const.SocialNetworks.VK_ID:
-                        VKSdk.initialize(
-                                sdkListener,
-                                getActivity().getResources().getString(R.string.vkontakte_app_id),
-                                VKAccessToken.tokenFromSharedPreferences(getActivity(), "VK_ACCESS_TOKEN"));
+                        ((BaseSocialActivity) getActivity()).initVKSdk(sdkListener);
                         VKSdk.authorize(sVkScope, true, false);
                         break;
                     case Const.SocialNetworks.GPLUS_ID:

@@ -23,7 +23,10 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKSdk;
+import com.vk.sdk.VKSdkListener;
+import com.vk.sdk.api.VKError;
 
 import org.chedream.android.R;
 import org.chedream.android.activities.BaseSocialActivity;
@@ -31,7 +34,6 @@ import org.chedream.android.helpers.Const;
 import org.chedream.android.helpers.RoundedImageViewHelper;
 
 public class ProfileFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
-
 
 
     private ProgressDialog mConnectionProgressDialog;
@@ -46,20 +48,20 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        if (((BaseSocialActivity) getActivity()).getGoogleApiClient() == null) {
-            switch (sharedPrefs.getInt(Const.SP_SOCIAL_NETWORK_ID, Const.SocialNetworks.N0_SOC_NETWORK)) {
-                case Const.SocialNetworks.FB_ID:
-                    FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-                    break;
-                case Const.SocialNetworks.GPLUS_ID:
+        switch (sharedPrefs.getInt(Const.SP_SOCIAL_NETWORK_ID, Const.SocialNetworks.N0_SOC_NETWORK)) {
+            case Const.SocialNetworks.FB_ID:
+                FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+                break;
+            case Const.SocialNetworks.GPLUS_ID:
+                if (((BaseSocialActivity) getActivity()).getGoogleApiClient() == null) {
                     ((BaseSocialActivity) getActivity()).initGoogleApiClient(this, this);
                     ((BaseSocialActivity) getActivity()).getGoogleApiClient().connect();
 
                     mConnectionProgressDialog = new ProgressDialog(getActivity());
                     mConnectionProgressDialog.setMessage("Signing in...");
                     mConnectionProgressDialog.show();
-                    break;
-            }
+                }
+                break;
         }
     }
 
@@ -107,6 +109,22 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
                         LoginManager.getInstance().logOut();
                         break;
                     case Const.SocialNetworks.VK_ID:
+                        ((BaseSocialActivity) getActivity()).initVKSdk(new VKSdkListener() {
+                            @Override
+                            public void onCaptchaError(VKError vkError) {
+
+                            }
+
+                            @Override
+                            public void onTokenExpired(VKAccessToken vkAccessToken) {
+
+                            }
+
+                            @Override
+                            public void onAccessDenied(VKError vkError) {
+
+                            }
+                        });
                         VKSdk.logout();
                         break;
                     case Const.SocialNetworks.GPLUS_ID:
