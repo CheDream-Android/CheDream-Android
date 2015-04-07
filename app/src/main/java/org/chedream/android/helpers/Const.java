@@ -30,6 +30,8 @@ public class Const {
         public static final int FB_ID = 1;
         public static final int VK_ID = 2;
         public static final int GPLUS_ID = 3;
+
+        public static final int GPLUS_REQUEST_CODE_RESOLVE_ERR = 9000;
     }
 
     public static class Navigation {

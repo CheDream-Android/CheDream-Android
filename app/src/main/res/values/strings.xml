@@ -28,8 +28,7 @@
     <string name="equip_support_btn">Надати обладнання</string>
     <string name="work_support_btn">Провести роботи</string>
     <string name="action_add_to_favorite">Додати мрію до обраних</string>
-    <string name="title_selection_favorites">Favorite Dreams</string>
-
+    <string name="logout_button_text">Вийти</string>
     <string name="dialog_no_internet_message">Відсутній звя\u0027зок з інтернетом. Перевірте підключення.</string>
 
 <!-- TODO: Remove or change this placeholder text -->

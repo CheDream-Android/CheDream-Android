@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
@@ -49,6 +49,7 @@ import com.vk.sdk.api.model.VKList;
 import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
+import org.chedream.android.activities.BaseSocialActivity;
 import org.chedream.android.activities.ProfileActivity;
 import org.chedream.android.helpers.Const;
 import org.json.JSONObject;
@@ -70,7 +71,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     private ArrayList<SocialNetwork> mSocialNetworks;
 
     private ProgressDialog mConnectionProgressDialog;
-    private GoogleApiClient mGoogleApiClient;
 
     public LoginFragment() {
 
@@ -79,12 +79,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addApi(Plus.API)
-                .addScope(Plus.SCOPE_PLUS_LOGIN)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+
+        ((BaseSocialActivity) getActivity()).initGoogleApiClient(this, this);
     }
 
     @Override
@@ -106,7 +102,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
 
                         LoginManager.getInstance().registerCallback(
-                                ProfileActivity.sCallbackManager,
+                                ((BaseSocialActivity) getActivity()).getFbCallbackManager(),
                                 new FacebookCallback<LoginResult>() {
                                     @Override
                                     public void onSuccess(LoginResult loginResult) {
@@ -119,11 +115,12 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                                                             String avatarUrl = "https://graph.facebook.com/"
                                                                     + user.optString("id") + "/picture?type=large";
                                                             saveUserData(user.optString("name"), avatarUrl);
+
+                                                            setLoginStatus(true, Const.SocialNetworks.FB_ID);
+                                                            moveToProfile();
                                                         }
                                                     }
                                                 }).executeAsync();
-
-                                        setLoginStatus(true, Const.SocialNetworks.FB_ID);
                                     }
 
                                     @Override
@@ -142,14 +139,11 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                         );
                         break;
                     case Const.SocialNetworks.VK_ID:
-                        VKSdk.initialize(
-                                sdkListener,
-                                getActivity().getResources().getString(R.string.vkontakte_app_id),
-                                VKAccessToken.tokenFromSharedPreferences(getActivity(), "VK_ACCESS_TOKEN"));
+                        ((BaseSocialActivity) getActivity()).initVKSdk(sdkListener);
                         VKSdk.authorize(sVkScope, true, false);
                         break;
                     case Const.SocialNetworks.GPLUS_ID:
-                        mGoogleApiClient.connect();
+                        ((BaseSocialActivity) getActivity()).getGoogleApiClient().connect();
 
                         mConnectionProgressDialog = new ProgressDialog(getActivity());
                         mConnectionProgressDialog.setMessage("Signing in...");
@@ -175,9 +169,9 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         @Override
         public void onAccessDenied(VKError authorizationError) {
-            new AlertDialog.Builder(getActivity())
-                    .setMessage(authorizationError.errorMessage)
-                    .show();
+//            new AlertDialog.Builder(getActivity())
+//                    .setMessage(authorizationError.errorMessage)
+//                    .show();
             Log.d(LOG_TAG, "Access Denied");
         }
 
@@ -198,51 +192,51 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                             user.first_name + " " + user.last_name,
                             user.photo_200
                     );
+                    setLoginStatus(true, Const.SocialNetworks.VK_ID);
+                    moveToProfile();
                 }
             });
-
-            setLoginStatus(true, Const.SocialNetworks.VK_ID);
             Log.d(LOG_TAG, "New User Token received");
         }
 
         @Override
         public void onAcceptUserToken(VKAccessToken token) {
             super.onAcceptUserToken(token);
-//            Intent i = new Intent(LoginActivity.this, MainActivity.class);
-//            startActivity(i);
             Log.d(LOG_TAG, "User Token accepted");
         }
     };
 
+    //Google Plus callbacks
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
         setLoginStatus(true, Const.SocialNetworks.GPLUS_ID);
-        Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+        Person person = Plus.PeopleApi
+                .getCurrentPerson(((BaseSocialActivity) getActivity()).getGoogleApiClient());
         String avatarUrl = person.getImage().getUrl();
         StringBuilder builder = new StringBuilder(avatarUrl)
                 .delete(avatarUrl.length()-2, avatarUrl.length())
                 .append("200");
         saveUserData(person.getDisplayName(), builder.toString());
-        Log.d(LOG_TAG, "connected");
+        moveToProfile();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(LOG_TAG, "G+ disconnected");
+        Log.d(LOG_TAG, "G+: Connection suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        if (mConnectionProgressDialog.isShowing()) {
-            if (connectionResult.hasResolution()) {
-                try {
-                    connectionResult.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLVE_ERR);
-                } catch (IntentSender.SendIntentException e) {
-                    mGoogleApiClient.connect();
-                }
+        Log.d(LOG_TAG, "G+: Connection failed");
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLVE_ERR);
+            } catch (IntentSender.SendIntentException e) {
+                ((BaseSocialActivity) getActivity()).getGoogleApiClient().connect();
             }
         }
+        mConnectionProgressDialog.dismiss();
     }
 
     private void setLoginStatus(boolean isLogged, int socialNetworkId) {
@@ -258,6 +252,13 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         editor.putString(Const.SP_USER_NAME, username);
         editor.putString(Const.SP_USER_PICTURE_URL, avatarUrl);
         editor.apply();
+    }
+
+    private void moveToProfile() {
+        FragmentTransaction transaction =
+                getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_container_profile, new ProfileFragment());
+        transaction.commit();
     }
 
     private void initSocNetworks() {

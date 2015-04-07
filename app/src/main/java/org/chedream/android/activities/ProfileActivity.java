@@ -1,48 +1,39 @@
 package org.chedream.android.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 
 import com.facebook.CallbackManager;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.vk.sdk.VKUIHelper;
 
 import org.chedream.android.R;
 import org.chedream.android.fragments.LoginFragment;
+import org.chedream.android.fragments.ProfileFragment;
+import org.chedream.android.helpers.Const;
 
-public class ProfileActivity extends ActionBarActivity {
-    public static CallbackManager sCallbackManager;
+public class ProfileActivity extends BaseSocialActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        VKUIHelper.onCreate(this);
-        sCallbackManager = CallbackManager.Factory.create();
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_container_profile, new LoginFragment())
-                    .commit();
+            if(sharedPrefs.getBoolean(Const.SP_LOGIN_STATUS, false)) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_container_profile, new ProfileFragment())
+                        .commit();
+            } else {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_container_profile, new LoginFragment())
+                        .commit();
+            }
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        VKUIHelper.onResume(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        sCallbackManager.onActivityResult(requestCode, resultCode, data);
-        VKUIHelper.onActivityResult(this, requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        VKUIHelper.onDestroy(this);
     }
 }
