@@ -12,8 +12,10 @@
 
     <color name="color_separator">#ff919191</color>
 
-    <color name="color_item_drawer_pressed">#fffcb040</color>
+    <color name="color_item_drawer_pressed">#fcfcb040</color>
 
     <color name="color_text_drawer">#ff645a50</color>
     <color name="color_text_pressed_drawer">#ffffff</color>
+
+    <color name="color_pressed_gridview">#64ffc04d</color>
 </resources>

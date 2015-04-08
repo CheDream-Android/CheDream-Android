@@ -20,8 +20,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
 import org.chedream.android.helpers.Const;
@@ -31,6 +29,8 @@ import org.chedream.android.model.Dream;
 import org.chedream.android.views.NotifyingScrollView;
 
 import io.realm.Realm;
+
+import static org.chedream.android.helpers.Const.IMAGELOADER;
 
 
 public class DetailsFragment extends Fragment {
@@ -127,8 +127,6 @@ public class DetailsFragment extends Fragment {
         actionBar.setTitle(mDream.getTitle());
 
         ImageView mainImage = (ImageView) view.findViewById(R.id.img_dream_main);
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.people)
@@ -139,15 +137,16 @@ public class DetailsFragment extends Fragment {
                 .considerExifParams(true)
                 .build();
 
-        imageLoader.displayImage(
+        IMAGELOADER.displayImage(
                 Const.ChedreamAPI.BASE_POSTER_URL + mDream.getMediaPoster().getProviderReference(),
                 mainImage,
                 options
         );
 
         RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.img_avatar);
-        imageLoader.displayImage(
-                mDream.getAuthor().getAvatar().getProviderReference(),
+        String providerReference = mDream.getAuthor().getAvatar().getProviderReference();
+        IMAGELOADER.displayImage(
+                providerReference,
                 avatar,
                 options
         );

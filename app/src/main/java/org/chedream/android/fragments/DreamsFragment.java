@@ -158,6 +158,7 @@ public class DreamsFragment extends Fragment {
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
+        gridView.setDrawSelectorOnTop(true);
         mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
 
 
