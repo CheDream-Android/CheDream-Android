@@ -32,8 +32,10 @@
     <string name="dialog_no_internet_message">Відсутній звя\u0027зок з інтернетом. Перевірте підключення.</string>
 
 <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login">Вхід</string>
     <string name="action_delete_all_favorites">Видалити всі  обрні мрії</string>
+    <string name="no_fav_dreams">Список улюблених мрій порожній</string>
+    <string name="dialog_delete_all_fav_title">Видалення улюблених мрій</string>
+    <string name="dialog_delete_all_fav_message">Ви впевнені, що хочете видалити всі улюблені мрії?</string>
 
 </resources>

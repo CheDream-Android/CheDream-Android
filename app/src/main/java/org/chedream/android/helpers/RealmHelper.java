@@ -163,6 +163,7 @@ public class RealmHelper {
         dream.setMediaPoster(mediaPoster);
         dream.setMediaPictures(mediaPictures);
         dream.setMediaCompletedPictures(mediaCompletedPictures);
+        dream.setDreamFromDatabase(true);
         Log.i(TAG, "Dream \"" + dream.getTitle() + "\" was added to realm database");
 
         realm.commitTransaction();
@@ -220,6 +221,7 @@ public class RealmHelper {
 
             Picture mediaPoster = new Picture(dreamsFromDb.get(i).getMediaPoster());
             dream.setMediaPoster(mediaPoster);
+            dream.setDreamFromDatabase(dreamsFromDb.get(i).isDreamFromDatabase());
 
             nativeDream.add(dream);
         }
@@ -233,9 +235,10 @@ public class RealmHelper {
         return result.size() != 0;
     }
 
-    public void deleteAllDreamsFromDatabase(Realm realm, Context context) {
+    public void deleteAllDreamsFromDatabase(Realm realm, Context activity, List<Dream> dreams) {
         realm.close();
-        Realm.deleteRealmFile(context);
+        Realm.deleteRealmFile(activity);
+        dreams.clear();
     }
 
     public void deleteDreamFromDatabase(Realm realm, Dream incomingDream, Context activity) {

@@ -65,6 +65,16 @@ public class Dream implements Parcelable {
     @SerializedName("dream_other_contributions")
     private ArrayList<OtherContribution> dreamOtherContributions;
 
+    private boolean isDreamFromDatabase;
+
+    public boolean isDreamFromDatabase() {
+        return isDreamFromDatabase;
+    }
+
+    public void setDreamFromDatabase(boolean isDreamFromDatabase) {
+        this.isDreamFromDatabase = isDreamFromDatabase;
+    }
+
     public int getId() {
         return id;
     }

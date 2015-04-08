@@ -18,12 +18,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -60,6 +62,7 @@ public class DreamsFragment extends Fragment {
     private GridViewAdapter mGridViewAdapter;
 
     private boolean mIsDataFromDBOnScreen = false;
+    private ViewStub mEmptyFavDreamList;
 
 
     public static DreamsFragment newInstance(int sectionNumber) {
@@ -85,6 +88,7 @@ public class DreamsFragment extends Fragment {
             e.printStackTrace();
             Realm.deleteRealmFile(mActivity);
         }
+        mRealmHelper = new RealmHelper();
     }
 
     @Override
@@ -104,20 +108,41 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == 4) {
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
             menu.findItem(R.id.action_delete_all_favorites).setVisible(true);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.action_delete_all_favorites:
-//                mRealm.close();
-//                Realm.deleteRealmFile(mActivity);
-//                mDreams.clear();
-//                mGridViewAdapter.notifyDataSetChanged();
-//        }
+        switch (item.getItemId()) {
+            case R.id.action_delete_all_favorites:
+                mDreamsFromDB = mRealmHelper.getDreamsFromDatabase(mRealm);
+                if (!mDreamsFromDB.isEmpty()) {
+                    new AlertDialog.Builder(mActivity)
+                            .setTitle(R.string.dialog_delete_all_fav_title)
+                            .setMessage(R.string.dialog_delete_all_fav_message)
+                            .setPositiveButton("Так", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mRealmHelper.deleteAllDreamsFromDatabase(mRealm, mActivity, mDreamsFromDB);
+                                    mGridViewAdapter.notifyDataSetChanged();
+                                    mRealm = Realm.getInstance(mActivity);
+                                    mEmptyFavDreamList.setVisibility(View.VISIBLE);
+                                }
+                            })
+                            .setNegativeButton("Ні", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .show();
+                } else {
+                    Toast.makeText(mActivity,R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
+                }
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -135,6 +160,8 @@ public class DreamsFragment extends Fragment {
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
+        mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
+
 
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
@@ -142,9 +169,12 @@ public class DreamsFragment extends Fragment {
 
         //checking, what section is selected
         if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
-            mRealmHelper = new RealmHelper();
             mDreamsFromDB = mRealmHelper.getDreamsFromDatabase(mRealm);
             mIsDataFromDBOnScreen = true;
+
+            if (mDreamsFromDB.isEmpty()) {
+                mEmptyFavDreamList.setVisibility(View.VISIBLE);
+            }
 
             mGridViewAdapter.notifyDataSetChanged();
             gridView.setAdapter(mGridViewAdapter);
@@ -183,7 +213,6 @@ public class DreamsFragment extends Fragment {
 
                     Gson gson = new Gson();
                     mDreams = gson.fromJson(response.toString(), Dreams.class);
-//                    mGridViewAdapter = new GridViewAdapter(getActivity());
                     gridView.setAdapter(mGridViewAdapter);
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
