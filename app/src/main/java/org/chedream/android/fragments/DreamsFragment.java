@@ -29,9 +29,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.apache.http.Header;
 import org.chedream.android.R;
@@ -50,12 +47,12 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.exceptions.RealmMigrationNeededException;
 
+import static org.chedream.android.helpers.Const.IMAGELOADER;
+
 public class DreamsFragment extends Fragment {
 
     private Dreams mDreams;
     private List<Dream> mDreamsFromDB;
-    private ImageLoader imageLoader;
-    private DisplayImageOptions options;
     private ActionBarActivity mActivity;
     private Realm mRealm;
     private RealmHelper mRealmHelper;
@@ -108,7 +105,8 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS
+                && mDreamsFromDB != null && !mDreamsFromDB.isEmpty()) {
             menu.findItem(R.id.action_delete_all_favorites).setVisible(true);
         }
     }
@@ -139,9 +137,9 @@ public class DreamsFragment extends Fragment {
                             })
                             .show();
                 } else {
-                    Toast.makeText(mActivity,R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
                 }
-
+                item.setVisible(false);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -186,17 +184,6 @@ public class DreamsFragment extends Fragment {
                     startActivity(intent);
                 }
             });
-
-
-            options = new DisplayImageOptions.Builder()
-                    .cacheOnDisk(true)
-                    .cacheInMemory(true)
-                    .considerExifParams(true)
-                    .build();
-
-            imageLoader = ImageLoader.getInstance();
-            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
-
         } else {
             mIsDataFromDBOnScreen = false;
             ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_DREAMS, null, new JsonHttpResponseHandler() {
@@ -227,16 +214,6 @@ public class DreamsFragment extends Fragment {
 
                         }
                     });
-
-
-                    options = new DisplayImageOptions.Builder()
-                            .cacheOnDisk(true)
-                            .cacheInMemory(true)
-                            .considerExifParams(true)
-                            .build();
-
-                    imageLoader = ImageLoader.getInstance();
-                    imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
                 }
 
                 @Override
@@ -338,10 +315,9 @@ public class DreamsFragment extends Fragment {
             if (!mIsDataFromDBOnScreen) {
                 Dream dream = getDream(position);
 
-                imageLoader.displayImage(
-                        Const.ChedreamAPI.BASE_POSTER_URL + dream.getMediaPoster().getProviderReference(),
-                        viewHolder.mImageViewMain,
-                        options);
+                IMAGELOADER.displayImage(Const.ChedreamAPI.BASE_POSTER_URL +
+                                dream.getMediaPoster().getProviderReference(),
+                        viewHolder.mImageViewMain);
 
                 viewHolder.mTitle.setText(dream.getTitle());
 
@@ -380,10 +356,9 @@ public class DreamsFragment extends Fragment {
                 viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
             } else {
                 //to get shown dreams while is no internet connection, need to save images into cache or on external card
-                imageLoader.displayImage(
-                        Const.ChedreamAPI.BASE_POSTER_URL + mDreamsFromDB.get(position).getMediaPoster().getProviderReference(),
-                        viewHolder.mImageViewMain,
-                        options);
+                IMAGELOADER.displayImage(Const.ChedreamAPI.BASE_POSTER_URL +
+                                mDreamsFromDB.get(position).getMediaPoster().getProviderReference(),
+                        viewHolder.mImageViewMain);
 
                 viewHolder.mTitle.setText(mDreamsFromDB.get(position).getTitle());
 
