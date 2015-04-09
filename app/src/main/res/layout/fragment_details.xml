@@ -11,18 +11,31 @@
         android:layout_height="wrap_content"
         android:background="@color/color_primary">
 
-        <ImageView
-            android:id="@+id/img_dream_main"
+        <FrameLayout
+            android:id="@+id/img_dream_main_container"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:contentDescription="@string/content_description"
-            android:scaleType="centerCrop"/>
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/img_dream_main"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:contentDescription="@string/content_description"
+                android:scaleType="centerCrop"/>
+
+            <View
+                android:id="@+id/view_gradient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient" />
+        </FrameLayout>
+
 
         <RelativeLayout
             android:id="@+id/description_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/img_dream_main"
+            android:layout_below="@+id/img_dream_main_container"
             android:background="@color/color_primary">
 
             <TextView
@@ -49,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/line_separator"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="20dp"
@@ -75,10 +88,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@+id/title_and_text_holder"
-                android:layout_marginBottom="25dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="5dp"
                 android:background="#ff919191"/>
 
             <TextView
@@ -107,7 +120,7 @@
             android:layout_height="72dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/img_dream_main"
+            android:layout_below="@+id/img_dream_main_container"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="-36dp"/>

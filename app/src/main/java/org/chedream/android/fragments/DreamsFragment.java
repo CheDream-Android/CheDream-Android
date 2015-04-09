@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import org.apache.http.Header;
 import org.chedream.android.R;
@@ -322,6 +321,7 @@ public class DreamsFragment extends Fragment {
 
             String title;
             String imageUrl;
+            String likes;
             int finResQuantity;
             int visibilityFin;
             int workResQuantity;
@@ -347,6 +347,7 @@ public class DreamsFragment extends Fragment {
                 finProgress = ChedreamAPIHelper.getCurrentFinContribQuantity(dream);
                 workProgress = ChedreamAPIHelper.getCurrentWorkContribQuantity(dream);
                 equipProgress = ChedreamAPIHelper.getCurrentEquipContribQuantity(dream);
+                likes = String.valueOf(dream.getUsersWhoFavorites().size());
             } else {
                 title = mDreamsFromDB.get(position).getTitle();
                 imageUrl = Const.ChedreamAPI.BASE_POSTER_URL +
@@ -360,6 +361,7 @@ public class DreamsFragment extends Fragment {
                 finProgress = mRealmHelper.getFinContQuantity(mRealm, position);
                 workProgress = mRealmHelper.getWorkContQuantity(mRealm, position);
                 equipProgress = mRealmHelper.getEquipContQuantity(mRealm, position);
+                likes = String.valueOf(mDreamsFromDB.get(position).getUsersWhoFavorites().size());
             }
 
             //to get shown dreams while is no internet connection, need to save images into cache or on external card
@@ -367,6 +369,7 @@ public class DreamsFragment extends Fragment {
             IMAGELOADER.displayImage(imageUrl, viewHolder.mImageViewMain);
 
             viewHolder.mTitle.setText(title);
+            viewHolder.mCountLikes.setText(likes);
 
             viewHolder.mBarMoney.setMax(finResQuantity);
             viewHolder.mContainerMoney.setVisibility(visibilityFin);

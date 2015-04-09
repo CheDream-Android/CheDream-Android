@@ -38,10 +38,12 @@ import io.realm.Realm;
 
 public class DetailsFragment extends Fragment {
     public static final String ARG_SECTION_NUMBER = "args";
+    public static final String ALPHA_SAVED = "ALPHA_SAVED";
     private ActionBarActivity mActivity;
     private Realm mRealm;
     private Dream mDream;
     private RealmHelper mRealmHelper = new RealmHelper();
+    private int mAlpha;
 
     public static DetailsFragment getInstance(Dream dream) {
         DetailsFragment fragment = new DetailsFragment();
@@ -107,8 +109,11 @@ public class DetailsFragment extends Fragment {
         final Drawable backgroundActionBar =
                 new ColorDrawable(getResources().getColor(R.color.color_primary));
 
+        if (savedInstanceState != null) {
+            mAlpha = savedInstanceState.getInt(ALPHA_SAVED);
+        }
         mActivity.getSupportActionBar().setBackgroundDrawable(backgroundActionBar);
-        backgroundActionBar.setAlpha(0);
+        backgroundActionBar.setAlpha(mAlpha);
 
         final int actionBarHeight = mActivity.getSupportActionBar().getHeight();
         final int imageHeight = 500;
@@ -120,8 +125,8 @@ public class DetailsFragment extends Fragment {
                         int headerHeight = imageHeight - actionBarHeight;
                         float ratio = (float)
                                 Math.min(Math.max(t, 0), headerHeight) / headerHeight;
-                        int newAlpha = (int) (ratio * maxAlpha);
-                        backgroundActionBar.setAlpha(newAlpha);
+                        mAlpha = (int) (ratio * maxAlpha);
+                        backgroundActionBar.setAlpha(mAlpha);
                     }
                 });
 
@@ -183,6 +188,12 @@ public class DetailsFragment extends Fragment {
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ALPHA_SAVED, mAlpha);
+    }
+
     /**
      * Method for Setting the Height of the ListView dynamically.
      * Hack to fix the issue of not showing all the items of the ListView
@@ -207,7 +218,7 @@ public class DetailsFragment extends Fragment {
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
-    } 
+    }
 
     public int getContrSize() {
         int firstSize;
@@ -284,7 +295,7 @@ public class DetailsFragment extends Fragment {
             if (!mDream.getDreamFinancialContributions().isEmpty() && mDream.getDreamFinancialContributions().size() > position) {
                 viewHolder.mFinContrTitle.setText(mDream.getDreamFinancialContributions().get(position).getFinancialResourcse().getTitle());
                 viewHolder.mFinContrQuantity.setText(String.valueOf(mDream.getDreamFinancialContributions()
-                        .get(position).getQuantity()) + " ???");
+                        .get(position).getQuantity()) + " грн");
             } else {
                 viewHolder.mFinContrTitle.setVisibility(View.GONE);
                 viewHolder.mFinContrQuantity.setVisibility(View.GONE);
@@ -302,7 +313,7 @@ public class DetailsFragment extends Fragment {
 
             if (!mDream.getDreamWorkContributions().isEmpty() && mDream.getDreamWorkContributions().size() > position) {
                 viewHolder.mWorkContrTitle.setText(mDream.getDreamWorkContributions().get(position).getWorkResource().getTitle());
-                viewHolder.mWorkContrQuantity.setText(String.valueOf(mDream.getDreamWorkContributions().get(position).getQuantity()) + " ??.");
+                viewHolder.mWorkContrQuantity.setText(String.valueOf(mDream.getDreamWorkContributions().get(position).getQuantity()) + " дн.");
             } else {
                 viewHolder.mWorkContrTitle.setVisibility(View.GONE);
                 viewHolder.mWorkContrQuantity.setVisibility(View.GONE);

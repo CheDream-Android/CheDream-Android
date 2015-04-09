@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:paddingLeft="@dimen/support_text_padding_title"
-              android:paddingRight="@dimen/support_text_padding_title">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/support_text_padding_title"
+    android:paddingRight="@dimen/support_text_padding_title">
 
     <TextView
         android:id="@+id/fin_support_title"
-        android:text="@string/fin_support_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:text="@string/fin_support_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
     <LinearLayout
@@ -21,25 +21,26 @@
 
         <TextView
             android:id="@+id/fin_contr_textview"
-            android:layout_weight="8"
-            android:padding="5dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:padding="5dp" />
 
         <TextView
             android:id="@+id/fin_contr_quantity"
             android:layout_width="wrap_content"
-            android:padding="5dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:layout_height="wrap_content"/>
+            android:gravity="end"
+            android:padding="5dp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/equip_support_title"
-        android:text="@string/equip_support_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:text="@string/equip_support_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,25 +49,26 @@
 
         <TextView
             android:id="@+id/equip_contr_textview"
-            android:layout_weight="8"
-            android:padding="5dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:padding="5dp" />
 
         <TextView
             android:id="@+id/equip_contr_quantity"
             android:layout_width="wrap_content"
-            android:padding="5dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:layout_height="wrap_content"/>
+            android:gravity="end"
+            android:padding="5dp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/work_support_title"
-        android:text="@string/work_support_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:text="@string/work_support_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -75,25 +77,26 @@
 
         <TextView
             android:id="@+id/work_contr_textview"
-            android:layout_weight="8"
-            android:padding="5dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:padding="5dp" />
 
         <TextView
             android:id="@+id/work_contr_quantity"
             android:layout_width="wrap_content"
-            android:padding="5dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:layout_height="wrap_content"/>
+            android:gravity="end"
+            android:padding="5dp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/other_support_title"
-        android:text="@string/other_support_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:text="@string/other_support_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -102,16 +105,17 @@
 
         <TextView
             android:id="@+id/other_contr_textview"
-            android:layout_weight="8"
-            android:padding="5dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:padding="5dp" />
 
         <TextView
             android:id="@+id/other_contr_quantity"
             android:layout_width="wrap_content"
-            android:padding="5dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:layout_height="wrap_content"/>
+            android:gravity="end"
+            android:padding="5dp" />
     </LinearLayout>
 </LinearLayout>
