@@ -1,14 +1,11 @@
 package org.chedream.android.helpers;
 
-import org.chedream.android.database.RealmDream;
 import org.chedream.android.model.Dream;
 import org.chedream.android.model.EquipmentContribution;
 import org.chedream.android.model.EquipmentResource;
 import org.chedream.android.model.FinancialContribution;
 import org.chedream.android.model.FinancialResource;
 import org.chedream.android.model.WorkResource;
-
-import java.util.ArrayList;
 
 public class ChedreamAPIHelper {
 

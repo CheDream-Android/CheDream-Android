@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,8 +31,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.apache.http.Header;
 import org.chedream.android.R;
@@ -50,12 +49,12 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.exceptions.RealmMigrationNeededException;
 
+import static org.chedream.android.helpers.Const.IMAGELOADER;
+
 public class DreamsFragment extends Fragment {
 
     private Dreams mDreams;
     private List<Dream> mDreamsFromDB;
-    private ImageLoader imageLoader;
-    private DisplayImageOptions options;
     private ActionBarActivity mActivity;
     private Realm mRealm;
     private RealmHelper mRealmHelper;
@@ -89,15 +88,6 @@ public class DreamsFragment extends Fragment {
             Realm.deleteRealmFile(mActivity);
         }
         mRealmHelper = new RealmHelper();
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
-
-        options = new DisplayImageOptions.Builder()
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .build();
-
     }
 
     @Override
@@ -117,7 +107,8 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
+        if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS
+                && mDreamsFromDB != null && !mDreamsFromDB.isEmpty()) {
             menu.findItem(R.id.action_delete_all_favorites).setVisible(true);
         }
     }
@@ -150,7 +141,7 @@ public class DreamsFragment extends Fragment {
                 } else {
                     Toast.makeText(mActivity, R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
                 }
-
+                item.setVisible(false);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -170,7 +161,10 @@ public class DreamsFragment extends Fragment {
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
+
         mGridViewAdapter = new GridViewAdapter(getActivity());
+        gridView.setDrawSelectorOnTop(true);
+        mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
 
         mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
 
@@ -325,88 +319,81 @@ public class DreamsFragment extends Fragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
+
+            String title;
+            String imageUrl;
+            int finResQuantity;
+            int visibilityFin;
+            int workResQuantity;
+            int visibilityWork;
+            int equipResQuantity;
+            int visibilityEquip;
+            int finProgress;
+            int workProgress;
+            int equipProgress;
+
             if (!mIsDataFromDBOnScreen) {
                 Dream dream = getDream(position);
 
-                imageLoader.displayImage(
-                        Const.ChedreamAPI.BASE_POSTER_URL + dream.getMediaPoster().getProviderReference(),
-                        viewHolder.mImageViewMain,
-                        options);
-
-                viewHolder.mTitle.setText(dream.getTitle());
-
-                viewHolder.mCountLikes.setText(String.valueOf(dream.getUsersWhoFavorites().size()));
-
-                viewHolder.mBarMoney.setProgress(ChedreamAPIHelper.getCurrentFinContribQuantity(dream));
-                Log.i(TAG, "mBar money = " + viewHolder.mBarMoney.getProgress());
-
-                viewHolder.mBarPeople.setProgress(ChedreamAPIHelper.getCurrentWorkContribQuantity(dream));
-                Log.i(TAG, "mBar people = " + viewHolder.mBarPeople.getProgress());
-
-                viewHolder.mBarTools.setProgress(ChedreamAPIHelper.getCurrentEquipContribQuantity(dream));
-                Log.i(TAG, "mBar tools = " + viewHolder.mBarTools.getProgress());
-
-                int visibility = ChedreamAPIHelper.getOverallFinResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
-                viewHolder.mContainerMoney.setVisibility(visibility);
-
-                visibility = ChedreamAPIHelper.getOverallWorkResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
-                viewHolder.mContainerPeople.setVisibility(visibility);
-
-                visibility = ChedreamAPIHelper.getOverallEquipResQuantity(dream) != 0 ? View.VISIBLE : View.GONE;
-                viewHolder.mContainerTools.setVisibility(visibility);
-
-                final int ORANGE = 0xFF9933;
-
-                PorterDuff.Mode mode = viewHolder.mBarMoney.
-                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-                viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
-                mode = viewHolder.mBarPeople.
-                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-
-                viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
-                mode = viewHolder.mBarTools.
-                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-
-                viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
+                title = dream.getTitle();
+                imageUrl = Const.ChedreamAPI.BASE_POSTER_URL +
+                        dream.getMediaPoster().getProviderReference();
+                finResQuantity = ChedreamAPIHelper.getOverallFinResQuantity(dream);
+                visibilityFin = finResQuantity != 0 ? View.VISIBLE : View.GONE;
+                workResQuantity = ChedreamAPIHelper.getOverallWorkResQuantity(dream);
+                visibilityWork = workResQuantity != 0 ? View.VISIBLE : View.GONE;
+                equipResQuantity = ChedreamAPIHelper.getOverallEquipResQuantity(dream);
+                visibilityEquip = equipResQuantity != 0 ? View.VISIBLE : View.GONE;
+                finProgress = ChedreamAPIHelper.getCurrentFinContribQuantity(dream);
+                workProgress = ChedreamAPIHelper.getCurrentWorkContribQuantity(dream);
+                equipProgress = ChedreamAPIHelper.getCurrentEquipContribQuantity(dream);
             } else {
-                //to get shown dreams while is no internet connection, need to save images into cache or on external card
-                imageLoader.displayImage(
-                        Const.ChedreamAPI.BASE_POSTER_URL + mDreamsFromDB.get(position).getMediaPoster().getProviderReference(),
-                        viewHolder.mImageViewMain,
-                        options);
-
-                viewHolder.mTitle.setText(mDreamsFromDB.get(position).getTitle());
-
-                viewHolder.mCountLikes.setText(String.valueOf(mDreamsFromDB.get(position).getUsersWhoFavorites().size()));
-
-                viewHolder.mBarMoney.setProgress(mRealmHelper.getFinContQuantity(mRealm, position));
-                viewHolder.mBarPeople.setProgress(mRealmHelper.getWorkContQuantity(mRealm, position));
-                viewHolder.mBarTools.setProgress(mRealmHelper.getEquipContQuantity(mRealm, position));
-
-                int visibility = mRealmHelper.getFinResQuantity(mRealm, position) != 0 ? View.VISIBLE : View.GONE;
-                viewHolder.mContainerMoney.setVisibility(visibility);
-
-                visibility = mRealmHelper.getWorkResQuantity(mRealm, position) != 0 ? View.VISIBLE : View.GONE;
-                viewHolder.mContainerPeople.setVisibility(visibility);
-
-                visibility = mRealmHelper.getEquipResQuantity(mRealm, position) != 0 ? View.VISIBLE : View.GONE;
-                viewHolder.mContainerTools.setVisibility(visibility);
-
-                final int ORANGE = 0xFF9933;
-
-                PorterDuff.Mode mode = viewHolder.mBarMoney.
-                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-                viewHolder.mBarMoney.getProgressDrawable().setColorFilter(ORANGE, mode);
-                mode = viewHolder.mBarPeople.
-                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-                viewHolder.mBarPeople.getProgressDrawable().setColorFilter(ORANGE, mode);
-                mode = viewHolder.mBarTools.
-                        getProgress() == 100 ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
-                viewHolder.mBarTools.getProgressDrawable().setColorFilter(ORANGE, mode);
+                title = mDreamsFromDB.get(position).getTitle();
+                imageUrl = Const.ChedreamAPI.BASE_POSTER_URL +
+                        mDreamsFromDB.get(position).getMediaPoster().getProviderReference();
+                finResQuantity = mRealmHelper.getFinResQuantity(mRealm, position);
+                visibilityFin = finResQuantity != 0 ? View.VISIBLE : View.GONE;
+                workResQuantity = mRealmHelper.getWorkResQuantity(mRealm, position);
+                visibilityWork = workResQuantity != 0 ? View.VISIBLE : View.GONE;
+                equipResQuantity = mRealmHelper.getEquipResQuantity(mRealm, position);
+                visibilityEquip = equipResQuantity != 0 ? View.VISIBLE : View.GONE;
+                finProgress = mRealmHelper.getFinContQuantity(mRealm, position);
+                workProgress = mRealmHelper.getWorkContQuantity(mRealm, position);
+                equipProgress = mRealmHelper.getEquipContQuantity(mRealm, position);
             }
+
+            //to get shown dreams while is no internet connection, need to save images into cache or on external card
+
+            IMAGELOADER.displayImage(imageUrl, viewHolder.mImageViewMain);
+
+            viewHolder.mTitle.setText(title);
+
+            viewHolder.mBarMoney.setMax(finResQuantity);
+            viewHolder.mContainerMoney.setVisibility(visibilityFin);
+
+            viewHolder.mBarPeople.setMax(workResQuantity);
+            viewHolder.mContainerPeople.setVisibility(visibilityWork);
+
+            viewHolder.mBarTools.setMax(equipResQuantity);
+            viewHolder.mContainerTools.setVisibility(visibilityEquip);
+
+            viewHolder.mBarMoney.setProgress(finProgress);
+            viewHolder.mBarPeople.setProgress(workProgress);
+            viewHolder.mBarTools.setProgress(equipProgress);
+
+            PorterDuff.Mode mode = viewHolder.mBarMoney.
+                    getProgress() == finResQuantity ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+            viewHolder.mBarMoney.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            mode = viewHolder.mBarPeople.
+                    getProgress() == workResQuantity ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+            viewHolder.mBarPeople.getProgressDrawable().setColorFilter(Color.GREEN, mode);
+            mode = viewHolder.mBarTools.
+                    getProgress() == equipResQuantity ? PorterDuff.Mode.SRC_IN : PorterDuff.Mode.DST;
+            viewHolder.mBarTools.getProgressDrawable().setColorFilter(Color.GREEN, mode);
             return convertView;
         }
     }
+
 
     private static class ViewHolder {
         ImageView mImageViewMain;
