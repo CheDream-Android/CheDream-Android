@@ -29,7 +29,9 @@
     <string name="work_support_btn">Провести роботи</string>
     <string name="action_add_to_favorite">Додати мрію до обраних</string>
     <string name="logout_button_text">Вийти</string>
+    
     <string name="dialog_no_internet_message">Відсутній звя\u0027зок з інтернетом. Перевірте підключення.</string>
+    <string name="dialog_soc_network_connection_failure">При підключенні до соціальної мережі виникла помилка.</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="login">Вхід</string>

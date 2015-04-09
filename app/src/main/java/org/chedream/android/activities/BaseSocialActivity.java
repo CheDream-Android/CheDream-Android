@@ -1,5 +1,7 @@
 package org.chedream.android.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -85,5 +87,19 @@ public abstract class BaseSocialActivity extends ActionBarActivity {
                 .getDefaultSharedPreferences(this);
         sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
                 .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
+    }
+
+    public void showAllertDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

@@ -131,7 +131,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
                                     @Override
                                     public void onError(FacebookException e) {
-                                        Log.d(LOG_TAG, "fb: login error");
+                                        ((BaseSocialActivity) getActivity()).showAllertDialog(getActivity()
+                                                .getResources().getString(R.string.dialog_soc_network_connection_failure));
                                     }
                                 });
                         LoginManager.getInstance().logInWithReadPermissions(
@@ -170,7 +171,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         @Override
         public void onAccessDenied(VKError authorizationError) {
-            Log.d(LOG_TAG, "Access Denied");
+            ((BaseSocialActivity) getActivity()).showAllertDialog(getActivity()
+                    .getResources().getString(R.string.dialog_soc_network_connection_failure));
         }
 
         @Override

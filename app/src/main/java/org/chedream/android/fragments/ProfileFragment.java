@@ -27,6 +27,7 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
 import org.chedream.android.activities.BaseSocialActivity;
@@ -99,8 +100,6 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 switch (sharedPrefs.getInt(
                         Const.SP_SOCIAL_NETWORK_ID,
                         Const.SocialNetworks.N0_SOC_NETWORK
@@ -112,7 +111,7 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
                         ((BaseSocialActivity) getActivity()).initVKSdk(new VKSdkListener() {
                             @Override
                             public void onCaptchaError(VKError vkError) {
-
+                                new VKCaptchaDialog(vkError).show();
                             }
 
                             @Override
@@ -122,7 +121,8 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
 
                             @Override
                             public void onAccessDenied(VKError vkError) {
-
+                                ((BaseSocialActivity) getActivity()).showAllertDialog(getActivity()
+                                        .getResources().getString(R.string.dialog_soc_network_connection_failure));
                             }
                         });
                         break;
@@ -153,7 +153,6 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
-        Log.d("Profile: ", "logout");
     }
 
     @Override
