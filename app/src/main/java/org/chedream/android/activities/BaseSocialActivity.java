@@ -1,14 +1,14 @@
 package org.chedream.android.activities;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 
 import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -34,7 +34,6 @@ public abstract class BaseSocialActivity extends ActionBarActivity {
         VKUIHelper.onCreate(this);
 
         mFbCallbackManager = CallbackManager.Factory.create();
-
     }
 
     @Override
@@ -81,5 +80,26 @@ public abstract class BaseSocialActivity extends ActionBarActivity {
                 .addConnectionCallbacks(callbacks)
                 .addOnConnectionFailedListener(listener)
                 .build();
+    }
+
+    public void setLoginStatus(boolean isLogged, int socialNetworkId) {
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
+                .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
+    }
+
+    public void showAllertDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

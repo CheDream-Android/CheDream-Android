@@ -27,6 +27,7 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.VKSdkListener;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
 import org.chedream.android.activities.BaseSocialActivity;
@@ -99,8 +100,6 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 switch (sharedPrefs.getInt(
                         Const.SP_SOCIAL_NETWORK_ID,
                         Const.SocialNetworks.N0_SOC_NETWORK
@@ -112,27 +111,28 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
                         ((BaseSocialActivity) getActivity()).initVKSdk(new VKSdkListener() {
                             @Override
                             public void onCaptchaError(VKError vkError) {
-
+                                new VKCaptchaDialog(vkError).show();
                             }
 
                             @Override
                             public void onTokenExpired(VKAccessToken vkAccessToken) {
-
+                                VKSdk.logout();
                             }
 
                             @Override
                             public void onAccessDenied(VKError vkError) {
-
+                                ((BaseSocialActivity) getActivity()).showAllertDialog(getActivity()
+                                        .getResources().getString(R.string.dialog_soc_network_connection_failure));
                             }
                         });
-                        VKSdk.logout();
                         break;
                     case Const.SocialNetworks.GPLUS_ID:
                         //Plus.AccountApi.clearDefaultAccount(((BaseSocialActivity) getActivity()).getGoogleApiClient());
                         //Plus.AccountApi.revokeAccessAndDisconnect(((BaseSocialActivity) getActivity()).getGoogleApiClient());
                         break;
                 }
-                setLoginStatus(false, Const.SocialNetworks.N0_SOC_NETWORK);
+                ((BaseSocialActivity) getActivity())
+                        .setLoginStatus(false, Const.SocialNetworks.N0_SOC_NETWORK);
                 FragmentTransaction transaction =
                         getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.main_container_profile, new LoginFragment());
@@ -150,18 +150,9 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
 
     }
 
-    //TODO: Write SharedPreferencesHelper
-    private void setLoginStatus(boolean isLogged, int socialNetworkId) {
-        SharedPreferences sp = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
-                .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
-    }
-
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
-        Log.d("Profile: ", "logout");
     }
 
     @Override
