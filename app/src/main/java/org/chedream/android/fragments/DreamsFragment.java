@@ -89,6 +89,15 @@ public class DreamsFragment extends Fragment {
             Realm.deleteRealmFile(mActivity);
         }
         mRealmHelper = new RealmHelper();
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
+
+        options = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .build();
+
     }
 
     @Override
@@ -139,7 +148,7 @@ public class DreamsFragment extends Fragment {
                             })
                             .show();
                 } else {
-                    Toast.makeText(mActivity,R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
                 }
 
         }
@@ -155,17 +164,18 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         final GridView gridView = (GridView) view.findViewById(R.id.grid_view);
         int orientation = getResources().getConfiguration().orientation;
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
             gridView.setNumColumns(3);
         }
-        mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
+        mGridViewAdapter = new GridViewAdapter(getActivity());
 
+        mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
 
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
-        mGridViewAdapter = new GridViewAdapter(getActivity());
 
         //checking, what section is selected
         if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
@@ -186,16 +196,6 @@ public class DreamsFragment extends Fragment {
                     startActivity(intent);
                 }
             });
-
-
-            options = new DisplayImageOptions.Builder()
-                    .cacheOnDisk(true)
-                    .cacheInMemory(true)
-                    .considerExifParams(true)
-                    .build();
-
-            imageLoader = ImageLoader.getInstance();
-            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
 
         } else {
             mIsDataFromDBOnScreen = false;
@@ -227,16 +227,6 @@ public class DreamsFragment extends Fragment {
 
                         }
                     });
-
-
-                    options = new DisplayImageOptions.Builder()
-                            .cacheOnDisk(true)
-                            .cacheInMemory(true)
-                            .considerExifParams(true)
-                            .build();
-
-                    imageLoader = ImageLoader.getInstance();
-                    imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
                 }
 
                 @Override

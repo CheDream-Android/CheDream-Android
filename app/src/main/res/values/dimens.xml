@@ -8,4 +8,8 @@
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="empty_fav_dreamlist_text_size">18sp</dimen>
     <dimen name="empty_fav_dreamlist_padding">15dp</dimen>
+    <dimen name="txt_username_margin_left">102dp</dimen>
+    <dimen name="txt_username_margin_top">4dp</dimen>
+    <dimen name="txt_username_text_size">20sp</dimen>
+    <dimen name="support_text_padding_title">15dp</dimen>
 </resources>

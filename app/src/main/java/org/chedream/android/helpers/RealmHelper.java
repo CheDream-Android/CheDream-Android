@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.chedream.android.R;
 import org.chedream.android.database.RealmDream;
 import org.chedream.android.database.RealmPicture;
 import org.chedream.android.database.RealmUser;
@@ -98,15 +99,15 @@ public class RealmHelper {
             picture.setHeight(realmMediaPictures.get(i).getHeight());
             mediaPictures.add(picture);
         }
-
+        Log.i("MediaCompletedPictures", "Size is " + realmMediaCompletedPictures.size());
         RealmList<RealmPicture> mediaCompletedPictures = new RealmList<>();
         for (int i = 0; i < realmMediaCompletedPictures.size(); i++) {
             RealmPicture picture = realm.createObject(RealmPicture.class);
-            picture.setId(mediaCompletedPictures.get(i).getId());
-            picture.setName(mediaCompletedPictures.get(i).getName());
-            picture.setProviderReference(mediaCompletedPictures.get(i).getProviderReference());
-            picture.setWidth(mediaCompletedPictures.get(i).getWidth());
-            picture.setHeight(mediaCompletedPictures.get(i).getHeight());
+            picture.setId(realmMediaCompletedPictures.get(i).getId());
+            picture.setName(realmMediaCompletedPictures.get(i).getName());
+            picture.setProviderReference(realmMediaCompletedPictures.get(i).getProviderReference());
+            picture.setWidth(realmMediaCompletedPictures.get(i).getWidth());
+            picture.setHeight(realmMediaCompletedPictures.get(i).getHeight());
             mediaCompletedPictures.add(picture);
         }
 
@@ -164,10 +165,9 @@ public class RealmHelper {
         dream.setMediaPictures(mediaPictures);
         dream.setMediaCompletedPictures(mediaCompletedPictures);
         dream.setDreamFromDatabase(true);
-        Log.i(TAG, "Dream \"" + dream.getTitle() + "\" was added to realm database");
 
         realm.commitTransaction();
-        Toast.makeText(activity, "Dream was added to DB", Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, activity.getString(R.string.added_dream_message), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -249,7 +249,7 @@ public class RealmHelper {
                 .findAll();
         result.remove(0);
         realm.commitTransaction();
-        Toast.makeText(activity, "Dream was deleted from DB", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, activity.getString(R.string.deleted_dream_message), Toast.LENGTH_SHORT).show();
     }
 
     public int getFinResQuantity(Realm realm, int position) {

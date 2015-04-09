@@ -37,5 +37,12 @@
     <string name="no_fav_dreams">Список улюблених мрій порожній</string>
     <string name="dialog_delete_all_fav_title">Видалення улюблених мрій</string>
     <string name="dialog_delete_all_fav_message">Ви впевнені, що хочете видалити всі улюблені мрії?</string>
+    <string name="fin_support_title">Фінансово</string>
+    <string name="equip_support_title">Обладнанням</string>
+    <string name="work_support_title">Роботою</string>
+    <string name="other_support_title">Іншим</string>
+    <string name="support_title">Підтримали</string>
+    <string name="deleted_dream_message">Мрію було видалено зі списку улюблених</string>
+    <string name="added_dream_message">Мрію було додано до улюблених</string>
 
 </resources>
