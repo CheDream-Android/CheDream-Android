@@ -1,5 +1,6 @@
 package org.chedream.android.fragments;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,8 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -91,6 +94,7 @@ public class DetailsFragment extends Fragment {
                     item.setIcon(R.drawable.ic_action_not_important);
                 } else {
                     mRealmHelper.addDreamToDatabase(mRealm, mDream, mActivity);
+                    item.setIcon(R.drawable.ic_action_important);
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -145,18 +149,28 @@ public class DetailsFragment extends Fragment {
         );
 
         RoundedImageViewHelper avatar = (RoundedImageViewHelper) view.findViewById(R.id.img_avatar);
-        imageLoader.displayImage(
-                mDream.getAuthor().getAvatar().getProviderReference(),
-                avatar,
-                options
-        );
+        if (mDream.getAuthor().getAvatar() != null) {
+            imageLoader.displayImage(
+                    mDream.getAuthor().getAvatar().getProviderReference(),
+                    avatar,
+                    options
+            );
+        }
 
-        TextView likesNumber = (TextView) view.findViewById(R.id.txt_likes_number);
-        if (mDream.getUsersWhoFavorites() != null) {
-            String likes = String.valueOf(mDream.getUsersWhoFavorites().size());
-            likesNumber.setText(likes);
+        ListView listView = (ListView) view.findViewById(R.id.members_list);
+
+        //To be honestly, here we must check the param 'isDreamFromDatabase', but this param is false always here (I don't get why)
+        //so simple check if some of contribution parameters is null (it is, if you get dream from DB)
+        if (mDream.getDreamFinancialResources() != null) {
+            if (getContrSize() != 0) {
+                MembersListAdapter adapter = new MembersListAdapter(getActivity());
+                listView.setAdapter(adapter);
+                setListViewHeightBasedOnChildren(listView);
+            }
         } else {
-            likesNumber.setText("0");
+            TextView supportTitle = (TextView) view.findViewById(R.id.support_title);
+            supportTitle.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
         }
         TextView userName = (TextView) view.findViewById(R.id.txt_user_name);
         userName.setText(mDream.getAuthor().getFirstName() + " " + mDream.getAuthor().getLastName());
@@ -167,12 +181,154 @@ public class DetailsFragment extends Fragment {
         TextView dreamDescription = (TextView) view.findViewById(R.id.dream_description_textview);
         dreamDescription.setText(Html.fromHtml(mDream.getDescription()));
 
-        Button estimateButton = (Button) view.findViewById(R.id.estimate_btn);
-
-        Button membersButton = (Button) view.findViewById(R.id.members_btn);
-
-        Button financialSupportButton = (Button) view.findViewById(R.id.financial_support_btn);
     }
 
+    /**
+     * Method for Setting the Height of the ListView dynamically.
+     * Hack to fix the issue of not showing all the items of the ListView
+     * when placed inside a ScrollView
+     */
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        MembersListAdapter listAdapter = (MembersListAdapter) listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            if (listItem instanceof ViewGroup)
+                listItem.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams
+                        .WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+    } 
+
+    public int getContrSize() {
+        int firstSize;
+        int secondSize;
+        if (mDream.getDreamFinancialContributions().size() >= mDream.getDreamEquipmentContributions().size()) {
+            firstSize = mDream.getDreamFinancialContributions().size();
+        } else {
+            firstSize = mDream.getDreamEquipmentContributions().size();
+        }
+        if (mDream.getDreamOtherContributions().size() >= mDream.getDreamWorkContributions().size()) {
+            secondSize = mDream.getDreamOtherContributions().size();
+        } else {
+            secondSize = mDream.getDreamWorkContributions().size();
+        }
+        if (firstSize >= secondSize) {
+            return firstSize;
+        } else {
+            return secondSize;
+        }
+    }
+
+    private class MembersListAdapter extends BaseAdapter {
+        private LayoutInflater mLayoutInflater;
+        private int mSize = getContrSize();
+
+        public MembersListAdapter(Context context) {
+            mLayoutInflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return mSize;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mDream.getUsersWhoFavorites().get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if (convertView == null) {
+                convertView = mLayoutInflater.inflate(R.layout.support_item, parent, false);
+
+                viewHolder = new ViewHolder();
+
+                viewHolder.mFinSupportTitle = (TextView) convertView.findViewById(R.id.fin_support_title);
+                viewHolder.mFinContrTitle = (TextView) convertView.findViewById(R.id.fin_contr_textview);
+                viewHolder.mFinContrQuantity = (TextView) convertView.findViewById(R.id.fin_contr_quantity);
+
+                viewHolder.mEquipSupportTitle = (TextView) convertView.findViewById(R.id.equip_support_title);
+                viewHolder.mEquipContrTitle = (TextView) convertView.findViewById(R.id.equip_contr_textview);
+                viewHolder.mEquipContrQuantity = (TextView) convertView.findViewById(R.id.equip_contr_quantity);
+
+                viewHolder.mWorkSupportTitle = (TextView) convertView.findViewById(R.id.work_support_title);
+                viewHolder.mWorkContrTitle = (TextView) convertView.findViewById(R.id.work_contr_textview);
+                viewHolder.mWorkContrQuantity = (TextView) convertView.findViewById(R.id.work_contr_quantity);
+
+                viewHolder.mOtherSupportTitle = (TextView) convertView.findViewById(R.id.other_support_title);
+                viewHolder.mOtherContrTitle = (TextView) convertView.findViewById(R.id.other_contr_textview);
+                viewHolder.mOtherContrQuantity = (TextView) convertView.findViewById(R.id.other_contr_quantity);
+
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            if (!mDream.getDreamFinancialContributions().isEmpty() && mDream.getDreamFinancialContributions().size() > position) {
+                viewHolder.mFinContrTitle.setText(mDream.getDreamFinancialContributions().get(position).getFinancialResourcse().getTitle());
+                viewHolder.mFinContrQuantity.setText(String.valueOf(mDream.getDreamFinancialContributions()
+                        .get(position).getQuantity()) + " ???");
+            } else {
+                viewHolder.mFinContrTitle.setVisibility(View.GONE);
+                viewHolder.mFinContrQuantity.setVisibility(View.GONE);
+                viewHolder.mFinSupportTitle.setVisibility(View.GONE);
+            }
+
+            if (!mDream.getDreamEquipmentContributions().isEmpty() && position < mDream.getDreamEquipmentContributions().size()) {
+                viewHolder.mEquipContrTitle.setText(mDream.getDreamEquipmentContributions().get(position).getEquipmentResource().getTitle());
+                viewHolder.mEquipContrQuantity.setText(String.valueOf(mDream.getDreamEquipmentContributions().get(position).getQuantity()));
+            } else {
+                viewHolder.mEquipContrTitle.setVisibility(View.GONE);
+                viewHolder.mEquipContrQuantity.setVisibility(View.GONE);
+                viewHolder.mEquipSupportTitle.setVisibility(View.GONE);
+            }
+
+            if (!mDream.getDreamWorkContributions().isEmpty() && mDream.getDreamWorkContributions().size() > position) {
+                viewHolder.mWorkContrTitle.setText(mDream.getDreamWorkContributions().get(position).getWorkResource().getTitle());
+                viewHolder.mWorkContrQuantity.setText(String.valueOf(mDream.getDreamWorkContributions().get(position).getQuantity()) + " ??.");
+            } else {
+                viewHolder.mWorkContrTitle.setVisibility(View.GONE);
+                viewHolder.mWorkContrQuantity.setVisibility(View.GONE);
+                viewHolder.mWorkSupportTitle.setVisibility(View.GONE);
+            }
+
+            if (!mDream.getDreamOtherContributions().isEmpty() && mDream.getDreamOtherContributions().size() > position) {
+                viewHolder.mOtherContrTitle.setText(mDream.getDreamOtherContributions().get(position).getTitle());
+                if (mDream.getDreamOtherContributions().get(position).getQuantity() != 0) {
+                    viewHolder.mOtherContrQuantity.setText(String.valueOf(mDream.getDreamOtherContributions().get(position).getQuantity()));
+                } else {
+                    viewHolder.mOtherContrQuantity.setText(" ");
+                }
+            } else {
+                viewHolder.mOtherContrTitle.setVisibility(View.GONE);
+                viewHolder.mOtherContrQuantity.setVisibility(View.GONE);
+                viewHolder.mOtherSupportTitle.setVisibility(View.GONE);
+            }
+            return convertView;
+        }
+    }
+
+    private static class ViewHolder {
+        TextView mFinContrTitle, mFinContrQuantity, mEquipContrTitle, mEquipContrQuantity, mFinSupportTitle,
+                mWorkContrTitle, mWorkContrQuantity, mOtherContrTitle, mOtherContrQuantity, mEquipSupportTitle,
+                mOtherSupportTitle, mWorkSupportTitle;
+    }
 
 }

@@ -1,10 +1,10 @@
 <org.chedream.android.views.NotifyingScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/details_main_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="false"
-    tools:context="org.chedream.android.activities.DetailsActivity">
+                                                xmlns:tools="http://schemas.android.com/tools"
+                                                android:id="@+id/details_main_container"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:fillViewport="false"
+                                                tools:context="org.chedream.android.activities.DetailsActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:contentDescription="@string/content_description"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"/>
 
         <RelativeLayout
             android:id="@+id/description_container"
@@ -26,29 +26,13 @@
             android:background="@color/color_primary">
 
             <TextView
-                android:id="@+id/txt_likes_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="15dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="6dp"
-                android:drawableLeft="@drawable/like"
-                android:drawableStart="@drawable/like"
-                android:textSize="20sp" />
-
-            <TextView
                 android:id="@+id/txt_user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="102dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginLeft="@dimen/txt_username_margin_left"
+                android:layout_marginTop="@dimen/txt_username_margin_top"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textSize="20sp" />
+                android:textSize="@dimen/txt_username_text_size"/>
 
             <View
                 android:id="@+id/line_separator"
@@ -58,7 +42,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
-                android:background="@color/color_separator" />
+                android:background="@color/color_separator"/>
 
             <LinearLayout
                 android:id="@+id/title_and_text_holder"
@@ -76,110 +60,45 @@
                     android:id="@+id/dream_title_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"/>
 
                 <TextView
                     android:id="@+id/dream_description_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/dream_info_btn_holder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title_and_text_holder"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/estimate_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/dream_info_btn_selector"
-                    android:text="@string/estimate_button" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="#ffffffff" />
-
-                <Button
-                    android:id="@+id/members_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/dream_info_btn_selector"
-                    android:text="@string/members_button" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
             </LinearLayout>
 
             <View
                 android:id="@+id/line_separator_2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@+id/dream_info_btn_holder"
+                android:layout_below="@+id/title_and_text_holder"
                 android:layout_marginBottom="25dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="25dp"
-                android:background="#ff919191" />
+                android:background="#ff919191"/>
 
-            <LinearLayout
-                android:id="@+id/dream_support_button_holder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/support_title"
                 android:layout_below="@+id/line_separator_2"
-                android:orientation="horizontal">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/support_title"
+                android:paddingRight="@dimen/support_text_padding_title"
+                android:paddingLeft="@dimen/support_text_padding_title"
+                android:textSize="@dimen/txt_username_text_size"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-                <Button
-                    android:id="@+id/financial_support_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/dream_support_btn_selector"
-                    android:drawableTop="@drawable/coins"
-                    android:paddingBottom="15dp"
-                    android:paddingTop="15dp"
-                    android:text="@string/financial_support_btn" />
-
-                <Button
-                    android:id="@+id/equip_support_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/dream_support_btn_selector"
-                    android:drawableTop="@drawable/tools"
-                    android:paddingBottom="15dp"
-                    android:paddingTop="15dp"
-                    android:text="@string/equip_support_btn" />
-
-                <Button
-                    android:id="@+id/work_support_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/dream_support_btn_selector"
-                    android:drawableTop="@drawable/people"
-                    android:paddingBottom="15dp"
-                    android:paddingTop="15dp"
-                    android:text="@string/work_support_btn" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/line_separator_3"
+            <ListView
+                android:id="@+id/members_list"
+                android:layout_below="@+id/support_title"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@+id/dream_support_button_holder"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="25dp"
-                android:background="#ff919191" />
+                android:layout_height="wrap_content"/>
         </RelativeLayout>
 
         <org.chedream.android.helpers.RoundedImageViewHelper
@@ -191,6 +110,6 @@
             android:layout_below="@+id/img_dream_main"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:layout_marginTop="-36dp" />
+            android:layout_marginTop="-36dp"/>
     </RelativeLayout>
 </org.chedream.android.views.NotifyingScrollView>

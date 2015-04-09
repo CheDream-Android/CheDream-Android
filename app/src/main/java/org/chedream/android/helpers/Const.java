@@ -1,6 +1,11 @@
 package org.chedream.android.helpers;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 public class Const {
+
+    public static ImageLoader IMAGELOADER;
+
     public static final String ARG_SECTION_NUMBER = "section_number";
 
     public static final String SP_LOGIN_STATUS = "login_status";

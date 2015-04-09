@@ -62,6 +62,16 @@ public class RealmDream extends RealmObject {
     private int workResQuantity;
     private int workContribQuantity;
 
+    private boolean isDreamFromDatabase;
+
+    public boolean isDreamFromDatabase() {
+        return isDreamFromDatabase;
+    }
+
+    public void setDreamFromDatabase(boolean isDreamFromDatabase) {
+        this.isDreamFromDatabase = isDreamFromDatabase;
+    }
+
     public int getFinResQuantity() {
         return finResQuantity;
     }
