@@ -117,7 +117,7 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
 
                             @Override
                             public void onTokenExpired(VKAccessToken vkAccessToken) {
-
+                                VKSdk.logout();
                             }
 
                             @Override
@@ -125,14 +125,14 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
 
                             }
                         });
-                        VKSdk.logout();
                         break;
                     case Const.SocialNetworks.GPLUS_ID:
                         //Plus.AccountApi.clearDefaultAccount(((BaseSocialActivity) getActivity()).getGoogleApiClient());
                         //Plus.AccountApi.revokeAccessAndDisconnect(((BaseSocialActivity) getActivity()).getGoogleApiClient());
                         break;
                 }
-                setLoginStatus(false, Const.SocialNetworks.N0_SOC_NETWORK);
+                ((BaseSocialActivity) getActivity())
+                        .setLoginStatus(false, Const.SocialNetworks.N0_SOC_NETWORK);
                 FragmentTransaction transaction =
                         getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.main_container_profile, new LoginFragment());
@@ -148,14 +148,6 @@ public class ProfileFragment extends Fragment implements ConnectionCallbacks, On
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-    }
-
-    //TODO: Write SharedPreferencesHelper
-    private void setLoginStatus(boolean isLogged, int socialNetworkId) {
-        SharedPreferences sp = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
-                .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
     }
 
     @Override

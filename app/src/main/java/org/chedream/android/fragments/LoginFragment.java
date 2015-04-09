@@ -116,7 +116,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                                                                     + user.optString("id") + "/picture?type=large";
                                                             saveUserData(user.optString("name"), avatarUrl);
 
-                                                            setLoginStatus(true, Const.SocialNetworks.FB_ID);
+                                                            ((BaseSocialActivity) getActivity())
+                                                                    .setLoginStatus(true, Const.SocialNetworks.FB_ID);
                                                             moveToProfile();
                                                         }
                                                     }
@@ -169,9 +170,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         @Override
         public void onAccessDenied(VKError authorizationError) {
-//            new AlertDialog.Builder(getActivity())
-//                    .setMessage(authorizationError.errorMessage)
-//                    .show();
             Log.d(LOG_TAG, "Access Denied");
         }
 
@@ -192,7 +190,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                             user.first_name + " " + user.last_name,
                             user.photo_200
                     );
-                    setLoginStatus(true, Const.SocialNetworks.VK_ID);
+                    ((BaseSocialActivity) getActivity()).setLoginStatus(true, Const.SocialNetworks.VK_ID);
                     moveToProfile();
                 }
             });
@@ -210,7 +208,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
-        setLoginStatus(true, Const.SocialNetworks.GPLUS_ID);
+        ((BaseSocialActivity) getActivity()).setLoginStatus(true, Const.SocialNetworks.GPLUS_ID);
         Person person = Plus.PeopleApi
                 .getCurrentPerson(((BaseSocialActivity) getActivity()).getGoogleApiClient());
         String avatarUrl = person.getImage().getUrl();
@@ -237,13 +235,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
             }
         }
         mConnectionProgressDialog.dismiss();
-    }
-
-    private void setLoginStatus(boolean isLogged, int socialNetworkId) {
-        SharedPreferences sp = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        sp.edit().putBoolean(Const.SP_LOGIN_STATUS, isLogged)
-                .putInt(Const.SP_SOCIAL_NETWORK_ID, socialNetworkId).apply();
     }
 
     private void saveUserData(String username, String avatarUrl) {
