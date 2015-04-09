@@ -2,6 +2,7 @@ package org.chedream.android.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,8 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * NOT FINISHED YET
@@ -35,7 +37,7 @@ import java.util.List;
 public class FaqFragment extends Fragment {
 
     private ProgressBar mProgressBar;
-    private TextView mTextView;
+    private ArrayList<FAQ> mListFaq = new ArrayList<>();
 
     public static FaqFragment newInstance(int sectionNumber) {
         FaqFragment fragment = new FaqFragment();
@@ -50,8 +52,9 @@ public class FaqFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_faq, container, false);
 
-        mTextView = (TextView) view.findViewById(R.id.faqs_textview);
         mProgressBar = (ProgressBar) view.findViewById(R.id.faqs_progress_bar);
+
+        final ExpandableListView mListView = (ExpandableListView) view.findViewById(R.id.faq_listview);
 
         ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_FAQS, null, new JsonHttpResponseHandler() {
             @Override
@@ -66,12 +69,12 @@ public class FaqFragment extends Fragment {
                 mProgressBar.setVisibility(View.GONE);
 
                 Gson gson = new Gson();
-                ArrayList<FAQ> faqs = gson.fromJson(
+                mListFaq = gson.fromJson(
                         response.toString(),
                         new TypeToken<ArrayList<FAQ>>(){}.getType()
                 );
 
-                mTextView.setText(Html.fromHtml(buildFAQsString(faqs)));
+                mListView.setAdapter(new FaqAdapter());
             }
 
             @Override
@@ -108,18 +111,79 @@ public class FaqFragment extends Fragment {
                 getArguments().getInt(Const.ARG_SECTION_NUMBER));
     }
 
-    private String buildFAQsString(List<FAQ> faqs) {
-        StringBuilder faqsStrBuilder = new StringBuilder("");
 
-        for (FAQ faq : faqs) {
-            faqsStrBuilder.append(String.format(
-                    "<b>Запитання</b>:<br>%s<br>",
-                    faq.getQuestion()));
-            faqsStrBuilder.append(String.format(
-                    "<br><b>Відповідь</b>:<br>%s<br><br><br>",
-                    faq.getAnswer()));
+    class FaqAdapter extends BaseExpandableListAdapter {
+
+        @Override
+        public int getGroupCount() {
+            return mListFaq.size();
         }
 
-        return faqsStrBuilder.toString();
+        @Override
+        public int getChildrenCount(int groupPosition) {
+            return 1;
+        }
+
+        @Override
+        public Object getGroup(int groupPosition) {
+            return mListFaq.get(groupPosition);
+        }
+
+        @Override
+        public Object getChild(int groupPosition, int childPosition) {
+            return null;
+        }
+
+        @Override
+        public long getGroupId(int groupPosition) {
+            return 0;
+        }
+
+        @Override
+        public long getChildId(int groupPosition, int childPosition) {
+            return 0;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.faq_group_item, null);
+            }
+
+            FAQ faq = (FAQ) getGroup(groupPosition);
+            TextView question = (TextView) convertView.findViewById(R.id.txt_faq_group);
+            question.setText(Html.fromHtml(faq.getQuestion()));
+            return convertView;
+        }
+
+        @Override
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.faq_child_item, null);
+            }
+
+            FAQ faq = (FAQ) getGroup(groupPosition);
+            TextView answerTextView = (TextView) convertView.findViewById(R.id.txt_faq_child);
+            String answer = faq.getAnswer();
+            answer = answer.replace("<p>&nbsp;</p>", "");
+            answer = answer.replace("<p>", "");
+            answer = answer.replace("</p>", "");
+//            StringBuilder builder = new StringBuilder(answer)
+//                    .delete(answer.length() - 13, answer.length());
+            answerTextView.setText(Html.fromHtml(answer));
+            return convertView;
+        }
+
+        @Override
+        public boolean isChildSelectable(int groupPosition, int childPosition) {
+            return false;
+        }
     }
 }
