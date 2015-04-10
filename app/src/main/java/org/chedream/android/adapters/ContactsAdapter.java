@@ -43,31 +43,42 @@ public class ContactsAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
 
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.contact_item, parent, false);
 
-            TextView txtName = (TextView) convertView.findViewById(R.id.txt_contact_name);
-            txtName.setText(mNames[position]);
+            viewHolder = new ViewHolder();
 
-            ImageView imgIcon = (ImageView) convertView.findViewById(R.id.img_contact_icon);
-            imgIcon.setImageResource(mIcons[position]);
+            viewHolder.txtName = (TextView) convertView.findViewById(R.id.txt_contact_name);
+            viewHolder.imgIcon = (ImageView) convertView.findViewById(R.id.img_contact_icon);
+            viewHolder.txtValue = (TextView) convertView.findViewById(R.id.txt_contact_value);
+            viewHolder.btnAction = (ImageButton) convertView.findViewById(R.id.img_btn_contact_intent);
 
-            TextView txtValue = (TextView) convertView.findViewById(R.id.txt_contact_value);
-            txtValue.setText(mValues[position]);
-
-            ImageButton btnAction = (ImageButton) convertView.findViewById(R.id.img_btn_contact_intent);
-            btnAction.setImageResource(mIconsForAction[position]);
-            btnAction.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(mValuesForAction[position]));
-                    mContext.startActivity(intent);
-                }
-            });
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
+
+        viewHolder.txtName.setText(mNames[position]);
+        viewHolder.imgIcon.setImageResource(mIcons[position]);
+        viewHolder.txtValue.setText(mValues[position]);
+        viewHolder.btnAction.setImageResource(mIconsForAction[position]);
+        viewHolder.btnAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(mValuesForAction[position]));
+                mContext.startActivity(intent);
+            }
+        });
         return convertView;
+    }
+
+    static class ViewHolder {
+        TextView txtName, txtValue;
+        ImageView imgIcon;
+        ImageButton btnAction;
     }
 
     private void initResources(Context context) {
