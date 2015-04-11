@@ -286,16 +286,27 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+
             if (convertView == null) {
                 convertView = mLayoutInflater.inflate(R.layout.soc_network_item, parent, false);
 
-                ImageView logoImageView = (ImageView) convertView.findViewById(R.id.logo_imageview);
-                logoImageView.setImageResource(mSocialNetworks.get(position).getLogo());
-
-                TextView titleTextView = (TextView) convertView.findViewById(R.id.title_textview);
-                titleTextView.setText(mSocialNetworks.get(position).getTitle());
+                viewHolder = new ViewHolder();
+                viewHolder.logoImageView = (ImageView) convertView.findViewById(R.id.logo_imageview);
+                viewHolder.titleTextView = (TextView) convertView.findViewById(R.id.title_textview);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
             }
+
+            viewHolder.logoImageView.setImageResource(mSocialNetworks.get(position).getLogo());
+            viewHolder.titleTextView.setText(mSocialNetworks.get(position).getTitle());
+
             return convertView;
+        }
+
+        class ViewHolder {
+            ImageView logoImageView;
+            TextView titleTextView;
         }
     }
 

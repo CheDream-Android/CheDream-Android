@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -43,6 +44,7 @@ import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -192,6 +194,7 @@ public class DreamsFragment extends Fragment {
 
         } else {
             mIsDataFromDBOnScreen = false;
+
             ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_DREAMS, null, new JsonHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -213,11 +216,43 @@ public class DreamsFragment extends Fragment {
                             Intent intent = new Intent(getActivity(), DetailsActivity.class);
                             intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
                             startActivity(intent);
+                        }
+                    });
+                    gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                        int currentFirstVisibleItem;
+                        int currentVisibleItemCount;
+                        int currentScrollState;
 
-                            Log.d("DreamsFragment",
-                                    Integer.toString(ChedreamAPIHelper.getCurrentFinContribQuantity(mDreams.getDreams().get(position))));
+                        @Override
+                        public void onScrollStateChanged(AbsListView view, int scrollState) {
+                            currentScrollState = scrollState;
+                            if (currentVisibleItemCount > 0 && currentScrollState == SCROLL_STATE_IDLE) {
+                                if(!mDreams.getNextPage().equals("false")) {
+                                    ChedreamHttpClient.get(mDreams.getNextPage(), null, new JsonHttpResponseHandler() {
+                                        @Override
+                                        public void onStart() {
+                                            super.onStart();
+                                            downloadingProgressBar.setVisibility(View.VISIBLE);
+                                        }
 
+                                        @Override
+                                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                            super.onSuccess(statusCode, headers, response);
+                                            downloadingProgressBar.setVisibility(View.GONE);
 
+                                            Gson gson = new Gson();
+                                            changeDreamsContent(gson.fromJson(response.toString(), Dreams.class));
+                                            mGridViewAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                            currentFirstVisibleItem = firstVisibleItem;
+                            currentVisibleItemCount = visibleItemCount;
                         }
                     });
                 }
@@ -252,6 +287,17 @@ public class DreamsFragment extends Fragment {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(Const.ARG_SECTION_NUMBER));
+    }
+
+    private void changeDreamsContent(Dreams dreams) {
+        mDreams.setFirstPage(dreams.getFirstPage());
+        mDreams.setLastPage(dreams.getLastPage());
+        mDreams.setNextPage(dreams.getNextPage());
+        mDreams.setPrevPage(dreams.getPrevPage());
+        mDreams.setSelfPage(dreams.getSelfPage());
+        ArrayList<Dream> buffer = mDreams.getDreams();
+        buffer.addAll(dreams.getDreams());
+        mDreams.setDreams(buffer);
     }
 
     private class GridViewAdapter extends BaseAdapter {

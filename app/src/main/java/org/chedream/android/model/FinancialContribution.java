@@ -12,7 +12,7 @@ public class FinancialContribution implements Parcelable {
 
     private int id;
 
-    private int quantity;
+    private long quantity;
 
     @SerializedName("hidden_contributor")
     private boolean hiddenContributor;
@@ -30,7 +30,7 @@ public class FinancialContribution implements Parcelable {
         this.id = id;
     }
 
-    public int getQuantity() {
+    public long getQuantity() {
         return quantity;
     }
 
@@ -64,7 +64,7 @@ public class FinancialContribution implements Parcelable {
 
     protected FinancialContribution(Parcel in) {
         id = in.readInt();
-        quantity = in.readInt();
+        quantity = in.readLong();
         hiddenContributor = in.readByte() != 0x00;
         user = (User) in.readValue(User.class.getClassLoader());
         financialResource = (FinancialResource) in.readValue(FinancialResource.class.getClassLoader());
@@ -78,7 +78,7 @@ public class FinancialContribution implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(quantity);
+        dest.writeLong(quantity);
         dest.writeByte((byte) (hiddenContributor ? 0x01 : 0x00));
         dest.writeValue(user);
         dest.writeValue(financialResource);
