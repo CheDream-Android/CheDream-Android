@@ -214,6 +214,9 @@ public class DreamsFragment extends Fragment {
                     mDreams = savedInstanceState.getParcelable(Const.SAVESTATE_DREAMS);
                     showContent(downloadingProgressBar);
                 }
+            } else {
+                Log.i(TAG, "savedInstanceState is null");
+                getAndParseContent(downloadingProgressBar);
             }
         }
     }
