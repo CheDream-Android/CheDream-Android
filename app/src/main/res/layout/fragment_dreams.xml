@@ -10,16 +10,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <GridView
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:id="@+id/grid_view"
-        android:listSelector="@drawable/dream_selector"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="2"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"/>
+        android:layout_height="match_parent">
+
+        <GridView
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:id="@+id/grid_view"
+            android:listSelector="@drawable/dream_selector"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="2"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/downloading_progress_bar"

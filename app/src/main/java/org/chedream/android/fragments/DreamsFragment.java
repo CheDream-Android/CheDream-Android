@@ -11,6 +11,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,6 +66,7 @@ public class DreamsFragment extends Fragment {
     private boolean mIsDataFromDBOnScreen = false, mIsLoading;
     private ViewStub mEmptyFavDreamList;
     private GridView mGridView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     public static DreamsFragment newInstance(int sectionNumber) {
@@ -180,6 +182,29 @@ public class DreamsFragment extends Fragment {
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
 
+        final int sectionNumber = getArguments().getInt(Const.ARG_SECTION_NUMBER);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                switch (sectionNumber) {
+                    case Const.Navigation.ALL_DREAMS:
+                        getAndParseContent(downloadingProgressBar);
+                        break;
+                    case Const.Navigation.FAVOURITE_DREAMS:
+                        mDreamsFromDB = mRealmHelper.getDreamsFromDatabase(mRealm);
+                        showContent();
+                        break;
+                }
+            }
+        });
+
+        mSwipeRefreshLayout.setColorSchemeColors(
+                R.color.primary_material_dark,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_red_light);
+
         //checking, what section is selected
         if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
             mDreamsFromDB = mRealmHelper.getDreamsFromDatabase(mRealm);
@@ -188,17 +213,7 @@ public class DreamsFragment extends Fragment {
             if (mDreamsFromDB.isEmpty()) {
                 mEmptyFavDreamList.setVisibility(View.VISIBLE);
             }
-
-            mGridViewAdapter.notifyDataSetChanged();
-            mGridView.setAdapter(mGridViewAdapter);
-            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                    intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreamsFromDB.get(position));
-                    startActivity(intent);
-                }
-            });
+            showContent();
 
         } else {
             mIsDataFromDBOnScreen = false;
@@ -212,7 +227,7 @@ public class DreamsFragment extends Fragment {
                 } else {
                     Log.i(TAG, "isnt loading");
                     mDreams = savedInstanceState.getParcelable(Const.SAVESTATE_DREAMS);
-                    showContent(downloadingProgressBar);
+                    showContent();
                 }
             } else {
                 Log.i(TAG, "savedInstanceState is null");
@@ -227,7 +242,9 @@ public class DreamsFragment extends Fragment {
             public void onStart() {
                 super.onStart();
                 mIsLoading = true;
-                downloadingProgressBar.setVisibility(View.VISIBLE);
+                if (!mSwipeRefreshLayout.isRefreshing()) {
+                    downloadingProgressBar.setVisibility(View.VISIBLE);
+                }
             }
 
 
@@ -235,12 +252,13 @@ public class DreamsFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
                 mIsLoading = false;
+                mSwipeRefreshLayout.setRefreshing(false);
                 downloadingProgressBar.setVisibility(View.GONE);
 
                 Gson gson = new Gson();
                 mDreams = gson.fromJson(response.toString(), Dreams.class);
 
-                showContent(downloadingProgressBar);
+                showContent();
 
             }
 
@@ -248,6 +266,7 @@ public class DreamsFragment extends Fragment {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 mIsLoading = false;
+                mSwipeRefreshLayout.setRefreshing(false);
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -267,7 +286,8 @@ public class DreamsFragment extends Fragment {
         });
     }
 
-    public void showContent(final ProgressBar downloadingProgressBar) {
+    public void showContent() {
+        mSwipeRefreshLayout.setRefreshing(false);
         mGridView.setAdapter(mGridViewAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -291,13 +311,13 @@ public class DreamsFragment extends Fragment {
                             @Override
                             public void onStart() {
                                 super.onStart();
-                                downloadingProgressBar.setVisibility(View.VISIBLE);
+                                mSwipeRefreshLayout.setRefreshing(true);
                             }
 
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                 super.onSuccess(statusCode, headers, response);
-                                downloadingProgressBar.setVisibility(View.GONE);
+                                mSwipeRefreshLayout.setRefreshing(false);
 
                                 Gson gson = new Gson();
                                 changeDreamsContent(gson.fromJson(response.toString(), Dreams.class));
