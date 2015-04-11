@@ -64,9 +64,10 @@ public class DreamsFragment extends Fragment {
     private GridViewAdapter mGridViewAdapter;
 
     private boolean mIsDataFromDBOnScreen = false, mIsLoading;
-    private ViewStub mEmptyFavDreamList;
+    private ViewStub mEmptyFavDreamList, mNoConnection;
     private GridView mGridView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private int mOrientation, mColumnNumber;
 
 
     public static DreamsFragment newInstance(int sectionNumber) {
@@ -151,6 +152,72 @@ public class DreamsFragment extends Fragment {
                     Toast.makeText(mActivity, R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
                 }
                 item.setVisible(false);
+                break;
+            case R.id.action_columns_picker:
+                if (Configuration.ORIENTATION_LANDSCAPE == mOrientation) {
+                    final CharSequence[] variants = {"1 стовпчик", "2 стовпчики", "3 стовпчики"};
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setTitle(R.string.dialog_pick_columns_number);
+                    builder.setSingleChoiceItems(variants, mColumnNumber, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 0:
+                                    mColumnNumber = 1;
+                                    break;
+                                case 1:
+                                    mColumnNumber = 2;
+                                    break;
+                                case 2:
+                                    mColumnNumber = 3;
+                                    break;
+                            }
+                        }
+                    });
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mGridView.setNumColumns(mColumnNumber);
+                        }
+                    });
+                    builder.setNegativeButton("Відміна", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.create().show();
+                } else {
+                    final CharSequence[] variants = {"1 стовпчик", "2 стовпчики"};
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setTitle(R.string.dialog_pick_columns_number);
+                    builder.setSingleChoiceItems(variants, mColumnNumber - 1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case 0:
+                                    mColumnNumber = 1;
+                                    break;
+                                case 1:
+                                    mColumnNumber = 2;
+                                    break;
+                            }
+                        }
+                    });
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mGridView.setNumColumns(mColumnNumber);
+                        }
+                    });
+                    builder.setNegativeButton("Відміна", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.create().show();
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -166,18 +233,20 @@ public class DreamsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mGridView = (GridView) view.findViewById(R.id.grid_view);
-        int orientation = getResources().getConfiguration().orientation;
-        if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
-            mGridView.setNumColumns(3);
-        }
-
+        mOrientation = getResources().getConfiguration().orientation;
         if (savedInstanceState != null) {
-            mGridView.setVerticalScrollbarPosition(savedInstanceState.getInt(Const.GRIDVIEW_POSITION));
+            mColumnNumber = savedInstanceState.getInt(Const.SAVESTATE_COLUMN_NUMBER);
+        } else {
+            mColumnNumber = 2;
+            if (Configuration.ORIENTATION_LANDSCAPE == mOrientation) {
+                mGridView.setNumColumns(3);
+            }
         }
 
         mGridViewAdapter = new GridViewAdapter(getActivity());
         mGridView.setDrawSelectorOnTop(true);
         mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
+        mNoConnection = (ViewStub) view.findViewById(R.id.viewstub_no_connection);
 
         final ProgressBar downloadingProgressBar =
                 (ProgressBar) view.findViewById(R.id.downloading_progress_bar);
@@ -216,19 +285,14 @@ public class DreamsFragment extends Fragment {
             mIsDataFromDBOnScreen = false;
 
             if (savedInstanceState != null) {
-                Log.i(TAG, "savedInstanceState isn't null");
                 mIsLoading = savedInstanceState.getBoolean(Const.SAVESTATE_LOADING_VAR);
                 if (mIsLoading) {
-                    Log.i(TAG, "IsLoading now");
-                    Log.i(TAG, "chedreamHttpClient canceled requests");
                     getAndParseContent(downloadingProgressBar);
                 } else {
-                    Log.i(TAG, "isnt loading");
                     mDreams = savedInstanceState.getParcelable(Const.SAVESTATE_DREAMS);
                     showContent();
                 }
             } else {
-                Log.i(TAG, "savedInstanceState is null");
                 getAndParseContent(downloadingProgressBar);
             }
         }
@@ -252,6 +316,7 @@ public class DreamsFragment extends Fragment {
                 mIsLoading = false;
                 mSwipeRefreshLayout.setRefreshing(false);
                 downloadingProgressBar.setVisibility(View.GONE);
+                mNoConnection.setVisibility(View.GONE);
 
                 Gson gson = new Gson();
                 mDreams = gson.fromJson(response.toString(), Dreams.class);
@@ -274,6 +339,8 @@ public class DreamsFragment extends Fragment {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 dialog.cancel();
+                                                downloadingProgressBar.setVisibility(View.GONE);
+                                                mNoConnection.setVisibility(View.VISIBLE);
                                             }
                                         });
                         AlertDialog alert = builder.create();
@@ -291,7 +358,7 @@ public class DreamsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                if(mIsDataFromDBOnScreen) {
+                if (mIsDataFromDBOnScreen) {
                     intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreamsFromDB.get(position));
                 } else {
                     intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
@@ -342,9 +409,9 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(Const.GRIDVIEW_POSITION, mGridView.getLastVisiblePosition());
         outState.putParcelable(Const.SAVESTATE_DREAMS, mDreams);
         outState.putBoolean(Const.SAVESTATE_LOADING_VAR, mIsLoading);
+        outState.putInt(Const.SAVESTATE_COLUMN_NUMBER, mColumnNumber);
     }
 
     @Override

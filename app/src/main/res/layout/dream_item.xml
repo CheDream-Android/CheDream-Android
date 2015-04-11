@@ -47,7 +47,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="108dp"
         android:baselineAligned="false"
         android:gravity="center"
         android:orientation="horizontal"
@@ -57,7 +57,8 @@
         <FrameLayout
             android:id="@+id/progress_money_container"
             android:layout_width="0dp"
-            android:layout_height="70dp"
+            android:layout_height="match_parent"
+            android:minHeight="70dp"
             android:layout_weight="1">
 
             <ImageView
@@ -71,7 +72,8 @@
                 android:id="@+id/progress_bar_money"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="match_parent"
+                android:minHeight="70dp"
                 android:max="100"
                 android:progressDrawable="@drawable/circle_progress"
                 android:secondaryProgress="100" />
@@ -81,7 +83,8 @@
         <FrameLayout
             android:id="@+id/progress_tools_container"
             android:layout_width="0dp"
-            android:layout_height="70dp"
+            android:layout_height="match_parent"
+            android:minHeight="70dp"
             android:layout_weight="1">
 
             <ImageView
@@ -95,7 +98,8 @@
                 android:id="@+id/progress_bar_tools"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="match_parent"
+                android:minHeight="70dp"
                 android:max="100"
                 android:progressDrawable="@drawable/circle_progress"
                 android:secondaryProgress="100" />
@@ -104,7 +108,8 @@
         <FrameLayout
             android:id="@+id/progress_people_container"
             android:layout_width="0dp"
-            android:layout_height="70dp"
+            android:minHeight="70dp"
+            android:layout_height="match_parent"
             android:layout_weight="1">
 
             <ImageView
@@ -118,7 +123,8 @@
                 android:id="@+id/progress_bar_people"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:minHeight="70dp"
+                android:layout_height="match_parent"
                 android:max="100"
                 android:progressDrawable="@drawable/circle_progress"
                 android:secondaryProgress="100" />

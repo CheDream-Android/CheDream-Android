@@ -48,5 +48,7 @@
     <string name="added_dream_message">Мрію було додано до улюблених</string>
     <string name="columns_picker_title">Вигляд</string>
     <string name="chose_real_dream_message">Щоб додати мрію до улюблених, перейдіть до розділу \"Всі мрії\"</string>
+    <string name="dialog_pick_columns_number">Оберіть вигляд меню</string>
+    <string name="no_connection">Відсутнє з\'єднання підключення до Інтернет. Можливо, варто спробувати пізніше ;)</string>
 
 </resources>
