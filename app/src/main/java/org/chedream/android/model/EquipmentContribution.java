@@ -12,7 +12,7 @@ public class EquipmentContribution  implements Parcelable {
     @SerializedName("created_at")
     private String createdAt;
 
-    private int quantity;
+    private long quantity;
 
     @SerializedName("hidden_contributor")
     private boolean hiddenContributor;
@@ -32,7 +32,7 @@ public class EquipmentContribution  implements Parcelable {
         this.createdAt = createdAt;
     }
 
-    public int getQuantity() {
+    public long getQuantity() {
         return quantity;
     }
 
@@ -74,7 +74,7 @@ public class EquipmentContribution  implements Parcelable {
 
     protected EquipmentContribution(Parcel in) {
         createdAt = in.readString();
-        quantity = in.readInt();
+        quantity = in.readLong();
         hiddenContributor = in.readByte() != 0x00;
         user = (User) in.readValue(User.class.getClassLoader());
         id = in.readString();
@@ -89,7 +89,7 @@ public class EquipmentContribution  implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(createdAt);
-        dest.writeInt(quantity);
+        dest.writeLong(quantity);
         dest.writeByte((byte) (hiddenContributor ? 0x01 : 0x00));
         dest.writeValue(user);
         dest.writeString(id);

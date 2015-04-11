@@ -201,6 +201,7 @@ public class DreamsFragment extends Fragment {
 
         } else {
             mIsDataFromDBOnScreen = false;
+
             if (savedInstanceState != null) {
                 Log.i(TAG, "savedInstanceState isn't null");
                 if (mIsLoading) {
@@ -213,14 +214,8 @@ public class DreamsFragment extends Fragment {
                     mDreams = savedInstanceState.getParcelable(Const.SAVESTATE_DREAMS);
                     showContent(downloadingProgressBar);
                 }
-            } else {
-                Log.i(TAG, "savedInstanceState is null");
-                getAndParseContent(downloadingProgressBar);
             }
-
-
         }
-
     }
 
     private void getAndParseContent(final ProgressBar downloadingProgressBar) {
@@ -318,17 +313,6 @@ public class DreamsFragment extends Fragment {
         });
     }
 
-    private void changeDreamsContent(Dreams dreams) {
-        mDreams.setFirstPage(dreams.getFirstPage());
-        mDreams.setLastPage(dreams.getLastPage());
-        mDreams.setNextPage(dreams.getNextPage());
-        mDreams.setPrevPage(dreams.getPrevPage());
-        mDreams.setSelfPage(dreams.getSelfPage());
-        ArrayList<Dream> buffer = mDreams.getDreams();
-        buffer.addAll(dreams.getDreams());
-        mDreams.setDreams(buffer);
-    }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -342,6 +326,17 @@ public class DreamsFragment extends Fragment {
         super.onAttach(activity);
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(Const.ARG_SECTION_NUMBER));
+    }
+
+    private void changeDreamsContent(Dreams dreams) {
+        mDreams.setFirstPage(dreams.getFirstPage());
+        mDreams.setLastPage(dreams.getLastPage());
+        mDreams.setNextPage(dreams.getNextPage());
+        mDreams.setPrevPage(dreams.getPrevPage());
+        mDreams.setSelfPage(dreams.getSelfPage());
+        ArrayList<Dream> buffer = mDreams.getDreams();
+        buffer.addAll(dreams.getDreams());
+        mDreams.setDreams(buffer);
     }
 
     private class GridViewAdapter extends BaseAdapter {

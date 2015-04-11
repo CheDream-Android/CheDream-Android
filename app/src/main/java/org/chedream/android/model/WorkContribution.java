@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public class WorkContribution implements Parcelable {
 
-    private int quantity;
+    private long quantity;
 
     @SerializedName("hidden_contributor")
     private boolean hiddenContributor;
@@ -22,7 +22,7 @@ public class WorkContribution implements Parcelable {
     @SerializedName("work_resource")
     private WorkResource workResource;
 
-    public int getQuantity() {
+    public long getQuantity() {
         return quantity;
     }
 
@@ -65,7 +65,7 @@ public class WorkContribution implements Parcelable {
 
 
     protected WorkContribution(Parcel in) {
-        quantity = in.readInt();
+        quantity = in.readLong();
         hiddenContributor = in.readByte() != 0x00;
         user = (User) in.readValue(User.class.getClassLoader());
         id = in.readString();
@@ -79,7 +79,7 @@ public class WorkContribution implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(quantity);
+        dest.writeLong(quantity);
         dest.writeByte((byte) (hiddenContributor ? 0x01 : 0x00));
         dest.writeValue(user);
         dest.writeString(id);
