@@ -7,6 +7,7 @@ public class Const {
     public static final String GRIDVIEW_POSITION = "GRIDVIEW_POSITION";
     public static final String SAVESTATE_DREAMS = "dramsInDreamsFragment";
     public static final String FRAGMENT_REPLACE_TAG = "tag_for_fragment";
+    public static final String SAVESTATE_LOADING_VAR = "it's_loading";
     public static ImageLoader IMAGELOADER;
 
     public static final String ARG_SECTION_NUMBER = "section_number";

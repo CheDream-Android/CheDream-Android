@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -95,8 +96,12 @@ public class DetailsFragment extends Fragment {
                     mRealmHelper.deleteDreamFromDatabase(mRealm, mDream, mActivity);
                     item.setIcon(R.drawable.ic_action_not_important);
                 } else {
-                    mRealmHelper.addDreamToDatabase(mRealm, mDream, mActivity);
-                    item.setIcon(R.drawable.ic_action_important);
+                    if (mDream.getDreamEquipmentContributions() != null) {
+                        mRealmHelper.addDreamToDatabase(mRealm, mDream, mActivity);
+                        item.setIcon(R.drawable.ic_action_important);
+                    } else {
+                        Toast.makeText(mActivity, getString(R.string.chose_real_dream_message), Toast.LENGTH_SHORT).show();
+                    }
                 }
         }
         return super.onOptionsItemSelected(item);

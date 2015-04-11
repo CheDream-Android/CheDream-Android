@@ -167,7 +167,7 @@ public class RealmHelper {
         dream.setDreamFromDatabase(true);
 
         realm.commitTransaction();
-        Toast.makeText(activity, activity.getString(R.string.added_dream_message), Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, activity.getString(R.string.added_dream_message), Toast.LENGTH_SHORT).show();
     }
 
     /**

@@ -198,12 +198,9 @@ public class DreamsFragment extends Fragment {
                 }
             }
         });
-
         mSwipeRefreshLayout.setColorSchemeColors(
-                R.color.primary_material_dark,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_orange_dark,
-                android.R.color.holo_red_light);
+                R.color.btn_orange,
+                R.color.color_primary);
 
         //checking, what section is selected
         if (getArguments().getInt(Const.ARG_SECTION_NUMBER) == Const.Navigation.FAVOURITE_DREAMS) {
@@ -220,6 +217,7 @@ public class DreamsFragment extends Fragment {
 
             if (savedInstanceState != null) {
                 Log.i(TAG, "savedInstanceState isn't null");
+                mIsLoading = savedInstanceState.getBoolean(Const.SAVESTATE_LOADING_VAR);
                 if (mIsLoading) {
                     Log.i(TAG, "IsLoading now");
                     Log.i(TAG, "chedreamHttpClient canceled requests");
@@ -293,7 +291,11 @@ public class DreamsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+                if(mIsDataFromDBOnScreen) {
+                    intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreamsFromDB.get(position));
+                } else {
+                    intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+                }
                 startActivity(intent);
             }
         });
@@ -342,6 +344,7 @@ public class DreamsFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putInt(Const.GRIDVIEW_POSITION, mGridView.getLastVisiblePosition());
         outState.putParcelable(Const.SAVESTATE_DREAMS, mDreams);
+        outState.putBoolean(Const.SAVESTATE_LOADING_VAR, mIsLoading);
     }
 
     @Override

@@ -2,10 +2,8 @@ package org.chedream.android.database;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.chedream.android.model.Picture;
 import org.chedream.android.model.User;
 
-import io.realm.Realm;
 import io.realm.RealmObject;
 
 /**
@@ -73,6 +71,8 @@ public class RealmUser extends RealmObject {
         this.username = user.getUsername();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.avatar = user.getAvatar().getProviderReference();
+        if (user.getAvatar().getProviderReference() != null) {
+            this.avatar = user.getAvatar().getProviderReference();
+        }
     }
 }
