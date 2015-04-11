@@ -18,4 +18,8 @@ public class ChedreamHttpClient {
     private static String getAbsoluteUrl(String relativeUrl) {
         return Const.ChedreamAPI.BASE_URL + relativeUrl;
     }
+
+    public static void cancelRequests(boolean mayInterruptIfRunning) {
+        client.cancelAllRequests(mayInterruptIfRunning);
+    }
 }

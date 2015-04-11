@@ -8,4 +8,9 @@
         android:visible="false"
         android:icon="@drawable/ic_action_discard"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_columns_picker"
+        android:title="@string/columns_picker_title"
+        android:icon="@drawable/ic_action_view_as_grid"
+        app:showAsAction="ifRoom"/>
 </menu>

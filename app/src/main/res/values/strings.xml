@@ -46,5 +46,6 @@
     <string name="support_title">Підтримали</string>
     <string name="deleted_dream_message">Мрію було видалено зі списку улюблених</string>
     <string name="added_dream_message">Мрію було додано до улюблених</string>
+    <string name="columns_picker_title">Вигляд</string>
 
 </resources>

@@ -86,7 +86,10 @@ public class Dreams implements Parcelable {
         dest.writeString(this.prevPage);
         dest.writeString(this.firstPage);
         dest.writeString(this.lastPage);
-        dest.writeSerializable(this.dreams);
+        /**
+         * Use 'writeTypedList' instead of 'writeSerilizble', when you want write any type of list
+         */
+        dest.writeTypedList(this.dreams);
     }
 
     public Dreams() {
@@ -98,7 +101,10 @@ public class Dreams implements Parcelable {
         this.prevPage = in.readString();
         this.firstPage = in.readString();
         this.lastPage = in.readString();
-        this.dreams = (ArrayList<Dream>) in.readSerializable();
+        /**
+         * And to get that list you should use 'createTypedArrayList' instead of 'read' method
+         */
+        this.dreams = in.createTypedArrayList(Dream.CREATOR);
     }
 
     public static final Parcelable.Creator<Dreams> CREATOR = new Parcelable.Creator<Dreams>() {

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -43,6 +44,7 @@ import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -52,6 +54,7 @@ import static org.chedream.android.helpers.Const.IMAGELOADER;
 
 public class DreamsFragment extends Fragment {
 
+    private static final String TAG = DreamsFragment.class.getName();
     private Dreams mDreams;
     private List<Dream> mDreamsFromDB;
     private ActionBarActivity mActivity;
@@ -59,8 +62,9 @@ public class DreamsFragment extends Fragment {
     private RealmHelper mRealmHelper;
     private GridViewAdapter mGridViewAdapter;
 
-    private boolean mIsDataFromDBOnScreen = false;
+    private boolean mIsDataFromDBOnScreen = false, mIsLoading;
     private ViewStub mEmptyFavDreamList;
+    private GridView mGridView;
 
 
     public static DreamsFragment newInstance(int sectionNumber) {
@@ -79,6 +83,7 @@ public class DreamsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        Log.i(TAG, "onCreate()");
         mActivity = (ActionBarActivity) getActivity();
         try {
             mRealm = Realm.getInstance(mActivity);
@@ -92,6 +97,7 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "onDestroy()");
         if (mRealm != null) {
             mRealm.close();
         }
@@ -99,6 +105,7 @@ public class DreamsFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.main, menu);
     }
@@ -155,16 +162,18 @@ public class DreamsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final GridView gridView = (GridView) view.findViewById(R.id.grid_view);
+        mGridView = (GridView) view.findViewById(R.id.grid_view);
         int orientation = getResources().getConfiguration().orientation;
         if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
-            gridView.setNumColumns(3);
+            mGridView.setNumColumns(3);
+        }
+
+        if (savedInstanceState != null) {
+            mGridView.setVerticalScrollbarPosition(savedInstanceState.getInt(Const.GRIDVIEW_POSITION));
         }
 
         mGridViewAdapter = new GridViewAdapter(getActivity());
-        gridView.setDrawSelectorOnTop(true);
-        mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
-
+        mGridView.setDrawSelectorOnTop(true);
         mEmptyFavDreamList = (ViewStub) view.findViewById(R.id.viewstub_no_fav_dreams);
 
         final ProgressBar downloadingProgressBar =
@@ -180,8 +189,8 @@ public class DreamsFragment extends Fragment {
             }
 
             mGridViewAdapter.notifyDataSetChanged();
-            gridView.setAdapter(mGridViewAdapter);
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mGridView.setAdapter(mGridViewAdapter);
+            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), DetailsActivity.class);
@@ -192,59 +201,140 @@ public class DreamsFragment extends Fragment {
 
         } else {
             mIsDataFromDBOnScreen = false;
-            ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_DREAMS, null, new JsonHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    super.onStart();
-                    downloadingProgressBar.setVisibility(View.VISIBLE);
+            if (savedInstanceState != null) {
+                Log.i(TAG, "savedInstanceState isn't null");
+                if (mIsLoading) {
+                    Log.i(TAG, "IsLoading now");
+                    ChedreamHttpClient.cancelRequests(true);
+                    Log.i(TAG, "chedreamHttpClient canceled requests");
+                    getAndParseContent(downloadingProgressBar);
+                } else {
+                    Log.i(TAG, "isnt loading");
+                    mDreams = savedInstanceState.getParcelable(Const.SAVESTATE_DREAMS);
+                    showContent(downloadingProgressBar);
                 }
+            } else {
+                Log.i(TAG, "savedInstanceState is null");
+                getAndParseContent(downloadingProgressBar);
+            }
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-                    downloadingProgressBar.setVisibility(View.GONE);
-
-                    Gson gson = new Gson();
-                    mDreams = gson.fromJson(response.toString(), Dreams.class);
-                    gridView.setAdapter(mGridViewAdapter);
-                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                            intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
-                            startActivity(intent);
-
-                            Log.d("DreamsFragment",
-                                    Integer.toString(ChedreamAPIHelper.getCurrentFinContribQuantity(mDreams.getDreams().get(position))));
-
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    super.onFailure(statusCode, headers, throwable, errorResponse);
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setMessage(getActivity().getResources().getString(R.string.dialog_no_internet_message))
-                                    .setCancelable(false)
-                                    .setNegativeButton("OK",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                        }
-                    });
-                }
-            });
 
         }
 
+    }
+
+    private void getAndParseContent(final ProgressBar downloadingProgressBar) {
+        ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_DREAMS, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                mIsLoading = true;
+                downloadingProgressBar.setVisibility(View.VISIBLE);
+            }
+
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                mIsLoading = false;
+                downloadingProgressBar.setVisibility(View.GONE);
+
+                Gson gson = new Gson();
+                mDreams = gson.fromJson(response.toString(), Dreams.class);
+
+                showContent(downloadingProgressBar);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                mIsLoading = false;
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage(getActivity().getResources().getString(R.string.dialog_no_internet_message))
+                                .setCancelable(false)
+                                .setNegativeButton("OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                });
+            }
+        });
+    }
+
+    public void showContent(final ProgressBar downloadingProgressBar) {
+        mGridView.setAdapter(mGridViewAdapter);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+                startActivity(intent);
+            }
+        });
+        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int currentFirstVisibleItem;
+            int currentVisibleItemCount;
+            int currentScrollState;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                currentScrollState = scrollState;
+                if (currentVisibleItemCount > 0 && currentScrollState == SCROLL_STATE_IDLE) {
+                    if (!mDreams.getNextPage().equals("false")) {
+                        ChedreamHttpClient.get(mDreams.getNextPage(), null, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onStart() {
+                                super.onStart();
+                                downloadingProgressBar.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                super.onSuccess(statusCode, headers, response);
+                                downloadingProgressBar.setVisibility(View.GONE);
+
+                                Gson gson = new Gson();
+                                changeDreamsContent(gson.fromJson(response.toString(), Dreams.class));
+                                mGridViewAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                currentFirstVisibleItem = firstVisibleItem;
+                currentVisibleItemCount = visibleItemCount;
+            }
+        });
+    }
+
+    private void changeDreamsContent(Dreams dreams) {
+        mDreams.setFirstPage(dreams.getFirstPage());
+        mDreams.setLastPage(dreams.getLastPage());
+        mDreams.setNextPage(dreams.getNextPage());
+        mDreams.setPrevPage(dreams.getPrevPage());
+        mDreams.setSelfPage(dreams.getSelfPage());
+        ArrayList<Dream> buffer = mDreams.getDreams();
+        buffer.addAll(dreams.getDreams());
+        mDreams.setDreams(buffer);
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(Const.GRIDVIEW_POSITION, mGridView.getLastVisiblePosition());
+        outState.putParcelable(Const.SAVESTATE_DREAMS, mDreams);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.chedream.android.activities;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import org.chedream.android.fragments.ContactsFragment;
 import org.chedream.android.fragments.DreamsFragment;
 import org.chedream.android.fragments.FaqFragment;
 import org.chedream.android.fragments.NavigationDrawerFragment;
+import org.chedream.android.helpers.Const;
 
 import static org.chedream.android.helpers.Const.Navigation.ALL_DREAMS;
 import static org.chedream.android.helpers.Const.Navigation.CONTACTS;
@@ -24,7 +26,7 @@ import static org.chedream.android.helpers.Const.Navigation.PROFILE;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+    private static final String TAG = MainActivity.class.getName();
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -34,6 +36,7 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    private boolean mIsRotationChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,11 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        if (savedInstanceState != null) {
+            mIsRotationChanged = true;
+        } else {
+            mIsRotationChanged = false;
+        }
     }
 
     @Override
@@ -75,9 +83,12 @@ public class MainActivity extends ActionBarActivity
             default:
                 return;
         }
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+        if (fragmentManager.findFragmentByTag(Const.FRAGMENT_REPLACE_TAG) == null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, fragment, Const.FRAGMENT_REPLACE_TAG)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit();
+        }
     }
 
     public void onSectionAttached(int number) {
