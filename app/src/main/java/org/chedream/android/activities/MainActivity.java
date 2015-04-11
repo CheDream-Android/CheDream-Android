@@ -63,6 +63,7 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
+        final String fragmentReplaceTag;
         switch (position) {
             case PROFILE:
                 Intent intent = new Intent(this, ProfileActivity.class);
@@ -70,22 +71,26 @@ public class MainActivity extends ActionBarActivity
                 return;
             case ALL_DREAMS:
                 fragment = DreamsFragment.newInstance(position);
+                fragmentReplaceTag = DreamsFragment.class.getName();
                 break;
             case FAVOURITE_DREAMS:
                 fragment = DreamsFragment.newInstance(position);
+                fragmentReplaceTag = "FavoriteDreams";
                 break;
             case FAQ:
                 fragment = FaqFragment.newInstance(position);
+                fragmentReplaceTag = FaqFragment.class.getName();
                 break;
             case CONTACTS:
                 fragment = ContactsFragment.newInstance(position);
+                fragmentReplaceTag = ContactsFragment.class.getName();
                 break;
             default:
                 return;
         }
-        if (fragmentManager.findFragmentByTag(Const.FRAGMENT_REPLACE_TAG) == null) {
+        if (fragmentManager.findFragmentByTag(fragmentReplaceTag) == null) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, fragment, Const.FRAGMENT_REPLACE_TAG)
+                    .replace(R.id.container, fragment, fragmentReplaceTag)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
         }

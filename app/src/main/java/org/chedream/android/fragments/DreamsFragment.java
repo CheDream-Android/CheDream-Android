@@ -97,6 +97,7 @@ public class DreamsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ChedreamHttpClient.cancelRequests(true);
         Log.i(TAG, "onDestroy()");
         if (mRealm != null) {
             mRealm.close();
@@ -206,7 +207,6 @@ public class DreamsFragment extends Fragment {
                 Log.i(TAG, "savedInstanceState isn't null");
                 if (mIsLoading) {
                     Log.i(TAG, "IsLoading now");
-                    ChedreamHttpClient.cancelRequests(true);
                     Log.i(TAG, "chedreamHttpClient canceled requests");
                     getAndParseContent(downloadingProgressBar);
                 } else {
