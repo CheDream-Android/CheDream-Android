@@ -124,7 +124,7 @@ public class DreamsFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete_all_favorites:
                 mDreamsFromDB = mRealmHelper.getDreamsFromDatabase(mRealm);
@@ -139,6 +139,7 @@ public class DreamsFragment extends Fragment {
                                     mGridViewAdapter.notifyDataSetChanged();
                                     mRealm = Realm.getInstance(mActivity);
                                     mEmptyFavDreamList.setVisibility(View.VISIBLE);
+                                    item.setVisible(false);
                                 }
                             })
                             .setNegativeButton("Ні", new DialogInterface.OnClickListener() {
@@ -151,7 +152,6 @@ public class DreamsFragment extends Fragment {
                 } else {
                     Toast.makeText(mActivity, R.string.no_fav_dreams, Toast.LENGTH_SHORT).show();
                 }
-                item.setVisible(false);
                 break;
             case R.id.action_columns_picker:
                 if (Configuration.ORIENTATION_LANDSCAPE == mOrientation) {
