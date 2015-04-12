@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,10 @@ public class FaqFragment extends Fragment {
 
     private ProgressBar mProgressBar;
     private ArrayList<FAQ> mListFaq = new ArrayList<>();
+    private ExpandableListView mListView;
+    private boolean mIsLoading;
+    private FragmentActivity mActivity;
+    private FaqAdapter mFaqAdapter;
 
     public static FaqFragment newInstance(int sectionNumber) {
         FaqFragment fragment = new FaqFragment();
@@ -48,18 +54,47 @@ public class FaqFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = (ActionBarActivity) getActivity();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ChedreamHttpClient.cancelRequests(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_faq, container, false);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.faqs_progress_bar);
 
-        final ExpandableListView mListView = (ExpandableListView) view.findViewById(R.id.faq_listview);
+        mListView = (ExpandableListView) view.findViewById(R.id.faq_listview);
+        mFaqAdapter = new FaqAdapter();
 
+        if (savedInstanceState != null) {
+            mIsLoading = savedInstanceState.getBoolean(Const.SAVESTATE_LOADING_FAQ);
+            if (mIsLoading) {
+                getAndParseContent();
+            } else {
+                mListFaq = savedInstanceState.getParcelableArrayList(Const.SAVESTATE_FAQ_ENITY);
+                mListView.setAdapter(mFaqAdapter);
+            }
+        } else {
+            getAndParseContent();
+        }
+        return view;
+    }
+
+    private void getAndParseContent() {
         ChedreamHttpClient.get(Const.ChedreamAPI.Get.ALL_FAQS, null, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 super.onStart();
+                mIsLoading = true;
                 mProgressBar.setVisibility(View.VISIBLE);
             }
 
@@ -67,20 +102,23 @@ public class FaqFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
                 mProgressBar.setVisibility(View.GONE);
+                mIsLoading = false;
 
                 Gson gson = new Gson();
                 mListFaq = gson.fromJson(
                         response.toString(),
-                        new TypeToken<ArrayList<FAQ>>(){}.getType()
+                        new TypeToken<ArrayList<FAQ>>() {
+                        }.getType()
                 );
 
-                mListView.setAdapter(new FaqAdapter());
+                mListView.setAdapter(mFaqAdapter);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                getActivity().runOnUiThread(new Runnable() {
+                mIsLoading = false;
+                mActivity.runOnUiThread(new Runnable() {
                     public void run() {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setMessage(getActivity().getResources().getString(R.string.dialog_no_internet_message))
@@ -97,12 +135,14 @@ public class FaqFragment extends Fragment {
                 });
             }
         });
-
-
-
-        return view;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(Const.SAVESTATE_LOADING_FAQ, mIsLoading);
+        outState.putParcelableArrayList(Const.SAVESTATE_FAQ_ENITY, mListFaq);
+    }
 
     @Override
     public void onAttach(Activity activity) {

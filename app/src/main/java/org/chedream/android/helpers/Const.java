@@ -7,6 +7,8 @@ public class Const {
     public static final String SAVESTATE_DREAMS = "dramsInDreamsFragment";
     public static final String SAVESTATE_LOADING_VAR = "it's_loading";
     public static final String SAVESTATE_COLUMN_NUMBER = "columns_number";
+    public static final String SAVESTATE_LOADING_FAQ = "faq_is_loading";
+    public static final String SAVESTATE_FAQ_ENITY = "faq_enity";
     public static ImageLoader IMAGELOADER;
 
     public static final String ARG_SECTION_NUMBER = "section_number";

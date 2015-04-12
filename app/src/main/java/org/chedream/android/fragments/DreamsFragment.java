@@ -158,7 +158,7 @@ public class DreamsFragment extends Fragment {
                     final CharSequence[] variants = {"1 стовпчик", "2 стовпчики", "3 стовпчики"};
                     AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                     builder.setTitle(R.string.dialog_pick_columns_number);
-                    builder.setSingleChoiceItems(variants, mColumnNumber, new DialogInterface.OnClickListener() {
+                    builder.setSingleChoiceItems(variants, mColumnNumber - 1, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
@@ -434,7 +434,6 @@ public class DreamsFragment extends Fragment {
 
     private class GridViewAdapter extends BaseAdapter {
 
-        private final String TAG = GridViewAdapter.class.getSimpleName();
         private LayoutInflater mLayoutInflater;
 
         public GridViewAdapter(Context context) {
