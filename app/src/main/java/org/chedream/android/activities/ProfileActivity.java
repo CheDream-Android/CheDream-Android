@@ -1,14 +1,8 @@
 package org.chedream.android.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
-
-import com.facebook.CallbackManager;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.vk.sdk.VKUIHelper;
 
 import org.chedream.android.R;
 import org.chedream.android.fragments.LoginFragment;
@@ -25,7 +19,7 @@ public class ProfileActivity extends BaseSocialActivity {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (savedInstanceState == null) {
-            if(sharedPrefs.getBoolean(Const.SP_LOGIN_STATUS, false)) {
+            if (sharedPrefs.getBoolean(Const.SP_LOGIN_STATUS, false)) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_container_profile, new ProfileFragment())
                         .commit();
@@ -35,5 +29,10 @@ public class ProfileActivity extends BaseSocialActivity {
                         .commit();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

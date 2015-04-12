@@ -10,14 +10,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import org.chedream.android.R;
 import org.chedream.android.fragments.ContactsFragment;
 import org.chedream.android.fragments.DreamsFragment;
 import org.chedream.android.fragments.FaqFragment;
 import org.chedream.android.fragments.NavigationDrawerFragment;
-import org.chedream.android.helpers.Const;
 
 import static org.chedream.android.helpers.Const.Navigation.ALL_DREAMS;
 import static org.chedream.android.helpers.Const.Navigation.CONTACTS;
@@ -61,7 +59,7 @@ public class MainActivity extends ActionBarActivity
         final String fragmentReplaceTag;
         switch (position) {
             case PROFILE:
-                Log.d("MainActivity", "Moving to profile");
+                Log.i(TAG, "going into profile activity");
                 Intent intent = new Intent(this, ProfileActivity.class);
                 startActivity(intent);
                 return;
@@ -85,6 +83,8 @@ public class MainActivity extends ActionBarActivity
                 return;
         }
         if (fragmentManager.findFragmentByTag(fragmentReplaceTag) == null) {
+            Log.i(TAG, "we are into fragment change block");
+            Log.i(TAG, fragmentReplaceTag);
             fragmentManager.beginTransaction()
                     .replace(R.id.container, fragment, fragmentReplaceTag)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

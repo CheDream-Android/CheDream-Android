@@ -1,6 +1,5 @@
 package org.chedream.android.fragments;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.IntentSender;
@@ -18,7 +17,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookCallback;
@@ -50,7 +48,6 @@ import com.vk.sdk.dialogs.VKCaptchaDialog;
 
 import org.chedream.android.R;
 import org.chedream.android.activities.BaseSocialActivity;
-import org.chedream.android.activities.ProfileActivity;
 import org.chedream.android.helpers.Const;
 import org.json.JSONObject;
 
@@ -79,8 +76,12 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         ((BaseSocialActivity) getActivity()).initGoogleApiClient(this, this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -215,7 +216,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 .getCurrentPerson(((BaseSocialActivity) getActivity()).getGoogleApiClient());
         String avatarUrl = person.getImage().getUrl();
         StringBuilder builder = new StringBuilder(avatarUrl)
-                .delete(avatarUrl.length()-2, avatarUrl.length())
+                .delete(avatarUrl.length() - 2, avatarUrl.length())
                 .append("200");
         saveUserData(person.getDisplayName(), builder.toString());
         moveToProfile();
