@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,6 +62,9 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     //    private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private TextView mLoginTextView;
+    private TextView mUserNameTextView;
+    private RoundedImageViewHelper mProfilePicture;
 
     private SharedPreferences mSharedPrefs;
 
@@ -141,38 +145,10 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        TextView loginTextView = (TextView) profile.findViewById(R.id.txt_login);
-        TextView userNameTextView = (TextView) profile.findViewById(R.id.txt_user_name);
-        RoundedImageViewHelper profilePicture =
+        mLoginTextView = (TextView) profile.findViewById(R.id.txt_login);
+        mUserNameTextView = (TextView) profile.findViewById(R.id.txt_user_name);
+        mProfilePicture =
                 (RoundedImageViewHelper) profile.findViewById(R.id.img_avatar);
-
-        if (mSharedPrefs.getBoolean(Const.SP_LOGIN_STATUS, false)) {
-            DisplayImageOptions options = new DisplayImageOptions.Builder()
-                    .showImageOnLoading(R.drawable.people)
-                    .showImageOnFail(R.drawable.people)
-                    .showImageForEmptyUri(R.drawable.people)
-                    .cacheOnDisk(true)
-                    .cacheInMemory(true)
-                    .considerExifParams(true)
-                    .build();
-
-            ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
-            imageLoader.displayImage(
-                    mSharedPrefs.getString(Const.SP_USER_PICTURE_URL, null),
-                    profilePicture,
-                    options
-            );
-
-            loginTextView.setVisibility(View.GONE);
-            profilePicture.setVisibility(View.VISIBLE);
-            userNameTextView.setText(mSharedPrefs.getString(Const.SP_USER_NAME, null));
-            userNameTextView.setVisibility(View.VISIBLE);
-        } else {
-            loginTextView.setVisibility(View.VISIBLE);
-            profilePicture.setVisibility(View.GONE);
-            userNameTextView.setVisibility(View.GONE);
-        }
 
         return view;
     }
@@ -254,6 +230,36 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    private void checkLoginStatus(){
+        if (mSharedPrefs.getBoolean(Const.SP_LOGIN_STATUS, false)) {
+            DisplayImageOptions options = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.people)
+                    .showImageOnFail(R.drawable.people)
+                    .showImageForEmptyUri(R.drawable.people)
+                    .cacheOnDisk(true)
+                    .cacheInMemory(true)
+                    .considerExifParams(true)
+                    .build();
+
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity().getBaseContext()));
+            imageLoader.displayImage(
+                    mSharedPrefs.getString(Const.SP_USER_PICTURE_URL, null),
+                    mProfilePicture,
+                    options
+            );
+
+            mLoginTextView.setVisibility(View.GONE);
+            mProfilePicture.setVisibility(View.VISIBLE);
+            mUserNameTextView.setText(mSharedPrefs.getString(Const.SP_USER_NAME, null));
+            mUserNameTextView.setVisibility(View.VISIBLE);
+        } else {
+            mLoginTextView.setVisibility(View.VISIBLE);
+            mProfilePicture.setVisibility(View.GONE);
+            mUserNameTextView.setVisibility(View.GONE);
+        }
+    }
+
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
 //        if (mDrawerListView != null) {
@@ -265,6 +271,12 @@ public class NavigationDrawerFragment extends Fragment {
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        checkLoginStatus();
     }
 
     @Override
