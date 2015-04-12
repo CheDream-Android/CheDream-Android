@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,11 +25,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.chedream.android.R;
-
-import static org.chedream.android.helpers.Const.Navigation.*;
-
 import org.chedream.android.helpers.Const;
 import org.chedream.android.helpers.RoundedImageViewHelper;
+
+import static org.chedream.android.helpers.Const.Navigation.ALL_DREAMS;
+import static org.chedream.android.helpers.Const.Navigation.CONTACTS;
+import static org.chedream.android.helpers.Const.Navigation.FAQ;
+import static org.chedream.android.helpers.Const.Navigation.FAVOURITE_DREAMS;
+import static org.chedream.android.helpers.Const.Navigation.PROFILE;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -82,6 +86,11 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            if (mCurrentSelectedPosition == Const.Navigation.PROFILE) {
+                mCurrentSelectedPosition = 1;
+            } else {
+                mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            }
             mFromSavedInstanceState = true;
         }
 
