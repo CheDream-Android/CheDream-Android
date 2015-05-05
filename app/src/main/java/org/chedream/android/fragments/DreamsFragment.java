@@ -43,6 +43,7 @@ import org.chedream.android.helpers.Const;
 import org.chedream.android.helpers.RealmHelper;
 import org.chedream.android.model.Dream;
 import org.chedream.android.model.Dreams;
+import org.chedream.android.model.DreamsContainer;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -361,7 +362,7 @@ public class DreamsFragment extends Fragment {
                 if (mIsDataFromDBOnScreen) {
                     intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreamsFromDB.get(position));
                 } else {
-                    intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position));
+                    intent.putExtra(DetailsFragment.ARG_SECTION_NUMBER, mDreams.getDreams().get(position).getDream());
                 }
                 startActivity(intent);
             }
@@ -427,7 +428,7 @@ public class DreamsFragment extends Fragment {
         mDreams.setNextPage(dreams.getNextPage());
         mDreams.setPrevPage(dreams.getPrevPage());
         mDreams.setSelfPage(dreams.getSelfPage());
-        ArrayList<Dream> buffer = mDreams.getDreams();
+        ArrayList<DreamsContainer> buffer = mDreams.getDreams();
         buffer.addAll(dreams.getDreams());
         mDreams.setDreams(buffer);
     }
@@ -459,8 +460,8 @@ public class DreamsFragment extends Fragment {
             }
         }
 
-        public Dream getDream(int position) {
-            return (Dream) getItem(position);
+        public DreamsContainer getDream(int position) {
+            return (DreamsContainer) getItem(position);
         }
 
         @Override
@@ -510,7 +511,7 @@ public class DreamsFragment extends Fragment {
             int equipProgress;
 
             if (!mIsDataFromDBOnScreen) {
-                Dream dream = getDream(position);
+                Dream dream = getDream(position).getDream();
 
                 title = dream.getTitle();
                 imageUrl = Const.ChedreamAPI.BASE_POSTER_URL +

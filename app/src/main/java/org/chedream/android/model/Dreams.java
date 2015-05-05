@@ -24,7 +24,7 @@ public class Dreams implements Parcelable {
     @SerializedName("last_page")
     private String lastPage;
 
-    private ArrayList<Dream> dreams;
+    private ArrayList<DreamsContainer> dreams;
 
     public String getSelfPage() {
         return selfPage;
@@ -66,12 +66,15 @@ public class Dreams implements Parcelable {
         this.lastPage = lastPage;
     }
 
-    public ArrayList<Dream> getDreams() {
+    public ArrayList<DreamsContainer> getDreams() {
         return dreams;
     }
 
-    public void setDreams(ArrayList<Dream> dreams) {
+    public void setDreams(ArrayList<DreamsContainer> dreams) {
         this.dreams = dreams;
+    }
+
+    public Dreams() {
     }
 
     @Override
@@ -92,9 +95,6 @@ public class Dreams implements Parcelable {
         dest.writeTypedList(this.dreams);
     }
 
-    public Dreams() {
-    }
-
     private Dreams(Parcel in) {
         this.selfPage = in.readString();
         this.nextPage = in.readString();
@@ -104,7 +104,7 @@ public class Dreams implements Parcelable {
         /**
          * And to get that list you should use 'createTypedArrayList' instead of 'read' method
          */
-        this.dreams = in.createTypedArrayList(Dream.CREATOR);
+        this.dreams = in.createTypedArrayList(DreamsContainer.CREATOR);
     }
 
     public static final Parcelable.Creator<Dreams> CREATOR = new Parcelable.Creator<Dreams>() {
